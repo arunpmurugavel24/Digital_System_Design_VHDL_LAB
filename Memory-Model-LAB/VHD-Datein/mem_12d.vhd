@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: Technical University of Munich
--- Engineer: Arun Prema Murugavel
+-- University: Technical University of Munich
+-- Student: Arun Prema Murugavel
 -- Matrikelnummer: 03787979
 -- Email: arun.murugavel@tum.de
 -- 

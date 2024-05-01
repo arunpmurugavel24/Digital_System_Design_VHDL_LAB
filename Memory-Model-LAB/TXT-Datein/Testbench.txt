@@ -1,8 +1,9 @@
 ----------------------------------------------------------------------------------
 -- Company: Technical University of Munich
 -- Engineer: Tiemo Schmidt
--- Matrikle Nr.: 03758911
--- 
+-- Matrikel Nr.: 03758911
+-- Email: tiemo.schmidt@tum.de
+--
 -- Create Date: 01.05.2024 21:58:10
 -- Design Name: Testbench
 -- Module Name: Testbench - Behavioral

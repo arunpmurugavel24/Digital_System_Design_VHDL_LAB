@@ -1,7 +1,9 @@
 ----------------------------------------------------------------------------------
--- Company: Technical University of Munich
+-- University: Technical University of Munich
 -- Engineer: Hian Zing Voon
--- 
+-- Matrikel Nr.: 03762313
+-- Email: hianzing.voon@tum.de
+--
 -- Create Date: 01.05.2024 21:58:10
 -- Design Name: TLE (Top Level Entity)
 -- Module Name: TLE - Behavioral
