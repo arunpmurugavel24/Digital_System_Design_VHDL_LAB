@@ -1,14 +1,16 @@
 ----------------------------------------------------------------------------------
 -- Company: Technical University of Munich
 -- Engineer: Arun Prema Murugavel
--- 
+-- Matrikelnummer: 03787979
+-- Email: arun.murugavel@tum.de
+--
 -- Create Date: 04/26/2024 01:47:55 PM
 -- Design Name: mem_12d
 -- Module Name: mem_12d - Behavioral
 -- Project Name: Memory Model LAB
 -- Target Devices: 
 -- Tool Versions: 
--- Description: It is a memory model with 12-dimensional index (UUT1).
+-- Description: It is a memory model with a 12-dimensional index (UUT1).
 -- 
 -- Dependencies: 
 -- 
@@ -45,7 +47,7 @@ end mem_12d;
 architecture Behavioral of mem_12d is
 
 begin
-    process( w_en, addr, data_in)
+    process( w_en, addr, data_in )
         type mem_type is array
             (bit,bit,bit,bit,bit,bit,bit,bit,bit,bit,bit,bit) of
                 bit_vector( 11 downto 0 );
@@ -59,11 +61,11 @@ begin
                 := data_in;
         end if;
         -- continuous read
-        data_out<=Mem(addr(11),addr(10),addr(9),
+        data_out <= Mem(addr(11),addr(10),addr(9),
                       addr(8),addr(7),addr(6),
                       addr(5),addr(4),addr(3),
                       addr(2),addr(1),addr(0));
         
-        end process;
+    end process;
 
 end Behavioral;
