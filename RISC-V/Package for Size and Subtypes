@@ -4,46 +4,72 @@ use IEEE.NUMERIC_STD.ALL;
 
 
 package cpu_defs_pack is
+
+	-- PC, Addr Wire of Bus, Memory Depth --
+    constant AddrSize       : integer := 16;
+    constant BytesperWord   : integer := 2;
+    constant MemoryAddrSize : AddrSize - BytesperWord;
+
+	-- Data Wire of Bus, Memory Width --
+	constant BusDataSize    : integer := 16;
+
+    -- (maximum) Size of Interuction --
+    constant InstrSize      : integer := 31;
+
+    -- Sizes of Register --
+    constant RegDataSize    : integer := 32;
+    constant RegAddrSize    : integer := 5; 
+
+    -- Type of Opcode --
+    constant opcode_type     : integer := 7;
+
+
     -- Definition of Types --
-    constant bus_width      : natural := 16;
-    constant data_width     : natural := bus_width;
-    constant addr_width     : natural := bus_width;
-    
-    constant reg_addr_width : natural := 4;
-    constant opcode_width   : natural := 7;
-    
-    subtype data_type is
-        bit_vector (data_width - 1 downto 0 );
-    subtype addr_type is
-        bit_vector (addr_width - 1 downto 0 );
-    subtype reg_addr_type is
-        bit_vector (reg_addr_width - 1 downto 0);
-    subtype opcode_type is
-        bit_vector (opcode_width - 1 downto 0);
+	subtype AddrType is bit_vector
+		(AddrSize-1 downto 0);
         
-    type reg_type is array(integer range 0 to 2**reg_addr_width-1) of data_type;
-    type mem_type is array(integer range 0 to 2**addr_width) of data_type;
+	subtype InstrType is bit_vector
+		(InstrSize-1 downto 0);
+        
+	subtype BusDataType is bit_vector
+		(BusDataSize-1 downto 0);
+        
+	subtype RegDataType is bit_vector
+		(RegDataSize-1 downto 0);
+        
+	type RegType is array 
+    	(integer range 2**RegAddrSize-1 downto 0) of RegDataType;
+        
+	type MemType is array
+    	(integer range 2**MemAddrSize-1 downto 0) of BusDataType;
+    
     
     -- Definition of Opcode --
+    
+    
+    -- Load and Store PC Instructions --
+    constant code_ldpc : opcode_type := "0000011";
+    constant code_stpc : opcode_type := "0100011";
+    
+    -- Logic and Arithmetic Instruction --
+    -- ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND --
+    constant code_logic: opcode_type := "0110011";
+
+
+
+
+
     -- No Operation and Stop Instruction --
     constant code_nop  : opcode_type := "0000000";
     constant code_stop : opcode_type := "0000001";
     
     -- Logic and Arithmetic Instruction --
-    constant code_add  : opcode_type := "0000010";
     constant code_addc : opcode_type := "0000011";
-    constant code_sub  : opcode_type := "0000100";
     constant code_subc : opcode_type := "0000101";
     constant code_not  : opcode_type := "0000110";
-    constant code_and  : opcode_type := "0000111";
-    constant code_or   : opcode_type := "0001000";
-    constant code_xor  : opcode_type := "0001001";
     constant code_rea  : opcode_type := "0001010";
     constant code_reo  : opcode_type := "0001011";
     constant code_rex  : opcode_type := "0001100";
-    constant code_sll  : opcode_type := "0001101";
-    constant code_srl  : opcode_type := "0001110";
-    constant code_sra  : opcode_type := "0001111";
     constant code_rol  : opcode_type := "0010000";
     constant code_rolc : opcode_type := "0010001";
     constant code_ror  : opcode_type := "0010010";
@@ -60,9 +86,6 @@ package cpu_defs_pack is
     constant code_in   : opcode_type := "0100101";
     constant code_out  : opcode_type := "0100110";
     
-    -- Load and Store PC Instructions --
-    constant code_ldpc : opcode_type := "0100111";
-    constant code_stpc : opcode_type := "0101000";
     
     -- Jump Instruction -- 
     constant code_jmp  : opcode_type := "0110000";
