@@ -25,6 +25,7 @@ use IEEE.numeric_bit.all;       --for to_integer
 use work.cpu_defs_pack.all;
 use work.output_functions_pack.all;
 use std.textio.all;
+use work.mem_defs_pack.ALL;
 
 
 
@@ -35,7 +36,10 @@ end System;
 architecture Behavioral of System is
 BEGIN
     PROCESS
-        --Output declarations
+        
+	file Input: text open read_mode is "C:\Users\...\Test.txt";  --Use full path to your text document
+
+	--Output declarations
         file Outputfile : Text is out "trace";
         variable l : line;
         
@@ -50,10 +54,10 @@ BEGIN
         --Programm Counter Addresses are in integer format
         variable PC : Integer :=0;
         --Instruction is a 32Bit_vector, But we work it as Integer
-        variable Inst : Integer RANGE 2**32-1 downto 0;
+        variable Inst : Integer RANGE 2**21-1 downto 0;
         --Decoded Instruction Parameter
         variable op : opcode_type;--Maybe integer or Opcode. Skript says Instruction is integer --Biggest Nr. without bbb=111 is 11 110 11=124, smallest Nr is 00 000 11
-        variable ErrorOP : String(7 downto 0);
+        variable ErrorOP : String(8 downto 1);
         --For I-Type instruction
         variable imm : integer RANGE 4095 downto 0;
         variable rs : integer RANGE 31 downto 0;
@@ -82,6 +86,8 @@ BEGIN
           
         --For R-Type Instruction
         BEGIN
+        filetomemory(Input, Mem);
+        wait for 200ns;
         --Create Output Header
         trace_Header(l, Outputfile);
         --get Instruction
@@ -518,6 +524,7 @@ BEGIN
             when others =>
                 --Error in OPCODE / or not implemented op-code
                 report "something is wrong with the OP-Code case. Op-Code(as integr): " & integer'image(to_integer(unsigned(OP))); --cant report Bit_vector transformed to integer
-        end case;        
+        end case;   
+	wait;     
         END process;
 end Behavioral;
