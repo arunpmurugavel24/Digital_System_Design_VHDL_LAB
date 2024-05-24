@@ -3,7 +3,7 @@
 -- Engineer: 
 -- 
 -- Create Date: 05/15/2024 04:24:26 PM
--- Design Name: 
+-- Design Name: Tiemo Schmidt, Hian Zing Voon, 
 -- Module Name: System - Behavioral
 -- Project Name: 
 -- Target Devices: 
@@ -35,6 +35,10 @@ end System;
 architecture Behavioral of System is
 BEGIN
     PROCESS
+---------------------            
+--MADE BY TIEMO SCHMITD            
+---------------------  
+    --Declarations
         --Output declarations
         file Outputfile : Text is out "trace";
         variable l : line;
@@ -50,7 +54,7 @@ BEGIN
         --Programm Counter Addresses are in integer format
         variable PC : Integer :=0;
         --Instruction is a 32Bit_vector, But we work it as Integer
-        variable Inst : Integer RANGE 2**32-1 downto 0;
+        variable Inst : Integer RANGE 2**32-1 downto 0;             --!!!!!!!!!!NEEDS TO BE CHANGE TO BITVECTOR. VHDL CANT HANDLE 2**32 BIG INTEGER
         --Decoded Instruction Parameter
         variable op : opcode_type;--Maybe integer or Opcode. Skript says Instruction is integer --Biggest Nr. without bbb=111 is 11 110 11=124, smallest Nr is 00 000 11
         variable ErrorOP : String(7 downto 0);
@@ -81,7 +85,13 @@ BEGIN
         variable immInteger : integer RANGE 2**20-1 downto 0;
           
         --For R-Type Instruction
+        
+        
+        --Begin running the Programm  
         BEGIN
+---------------------            
+--MADE BY TIEMO SCHMITD            
+---------------------
         --Create Output Header
         trace_Header(l, Outputfile);
         --get Instruction
@@ -95,7 +105,8 @@ BEGIN
         case OP is
          
             when code_stop => wait; --Declared by us. Opcode is the only invalid OP-Code "111 1111"
-            
+---------------------            
+--MADE BY TIEMO SCHMITD            
 ---------------------       
             when code_load =>
                 --we have Instruction Typ-L
@@ -385,7 +396,10 @@ BEGIN
                         report "something is wrong with the Load func3 case. func3: " & integer'image(func3);
 
                 end case;
----------------------                
+                
+---------------------            
+--MADE BY TIEMO SCHMITD            
+---------------------
             when code_store=>
                 --store decoding
                 --get func3 from instr. for S-Type func3 is bit 14 to 12
@@ -437,7 +451,9 @@ BEGIN
                         report "something is wrong with the Store func3 case. func3: " & integer'image(func3);
                 end case;
                 
----------------------                                    
+---------------------            
+--MADE BY Hian Zing Voon            
+---------------------                                                    
             when code_arithmetic =>
                 --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
                 
@@ -446,7 +462,9 @@ BEGIN
             when code_arithmeticImm_nop =>
                 --Arithmetic OP (ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI) and NOP (ADDI with x0 x0 0)
 
----------------------              
+---------------------            
+--MADE BY TIEMO SCHMITD            
+---------------------             
             when code_jal =>
                 --Jump Instruction with no condition
                 --get rd
@@ -485,7 +503,9 @@ BEGIN
                 --the Specification PDF says it jumps in 2Byte Steps, but because we dont have shortInstruction we can jump in 4Byte(word) steps
                 PC := (PC-1) + immInteger; --PC - 1, because after Loading Inst we directly increment it, which would be wrong adress by 1 here
 
----------------------                
+---------------------            
+--MADE BY TIEMO SCHMIDT            
+---------------------              
             when code_jalr =>
                 --Jump with return adress
                 --get Parameters
@@ -502,19 +522,27 @@ BEGIN
                 --set PC to Target address
                 PC := (rs1+Imm) / 4; --divided by 4, because Pc is addressing words and not halfword. Because we are not using ShortInstructions
             
----------------------
+---------------------            
+--MADE BY             
+---------------------  
             when code_Branch => 
                 --OR arithmetic
                 
---------------------- 
+---------------------            
+--MADE BY             
+---------------------  
             when code_lui =>
                 --Load upper Imm 20Bit fills lower 12Bit with 0
  
---------------------- 
+---------------------            
+--MADE BY             
+---------------------  
             when code_AUIPC =>
                 --Build 32Bit address. For more context look at RiscV_spec.pdf P.19
             
----------------------                                           
+---------------------            
+--MADE BY             
+---------------------                                            
             when others =>
                 --Error in OPCODE / or not implemented op-code
                 report "something is wrong with the OP-Code case. Op-Code(as integr): " & integer'image(to_integer(unsigned(OP))); --cant report Bit_vector transformed to integer
