@@ -23,6 +23,10 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_bit.all;       --for to_integer
 use work.cpu_defs_pack.all;
+use work.output_functions_pack.all;
+use std.textio.all;
+
+
 
 entity System is
 --  empty for the moment
@@ -31,11 +35,18 @@ end System;
 architecture Behavioral of System is
 BEGIN
     PROCESS
+        --Output declarations
+        file Outputfile : Text is out "trace";
+        variable l : line;
+        
+        
         --Variable declaration
         --Register inside CPU
         variable Reg : reg_type;
         --Memory outside CPU
         variable Mem : mem_type;
+   --!!!!!The Memory initialitation here (the function name)
+        
         --Programm Counter Addresses are in integer format
         variable PC : Integer :=0;
         --Instruction is a 32Bit_vector, But we work it as Integer
@@ -60,10 +71,19 @@ BEGIN
         --For S-type instruction
         variable rs1 : integer RANGE 2**5-1 downto 0;
         variable rs2 : integer RANGE 2**5-1 downto 0;
-        variable Immp1 : bit_vector(6 downto 0);    --first 7 Bit of Imm
-        variable Immp2 : bit_vector(4 downto 0);     --senond(lower) part of Imm
+        variable Immp1 : bit_vector(6 downto 0);        --first 7 Bit of Imm
+        variable Immp2 : bit_vector(4 downto 0);        --senond(lower) part of Imm
+        
+        --For J-Type instruction Jump
+        --rd is already defined
+        variable InstBit : bit_vector (31 downto 0);    --Instruction as Bit, for easier disassamble     
+        variable imm32Bit : bit_vector(31 downto 0);    --Immidiet need to be reorganized, easyer done as bit_vector
+        variable immInteger : integer RANGE 2**20-1 downto 0;
+          
         --For R-Type Instruction
         BEGIN
+        --Create Output Header
+        trace_Header(l, Outputfile);
         --get Instruction
         Inst := TO_INTEGER(unsigned(Mem(rs)));  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
         --PC count up
@@ -72,12 +92,11 @@ BEGIN
         --decode Inst: get OP-CODE
         OP := bit_vector(TO_UNSIGNED(Inst mod 128, 7)); --gets the last 7Bit as integer
         
-        case OP is 
-            --basic OP
-            when code_nop => null; --no operation
-            when code_stop => wait; --stop programm
+        case OP is
+         
+            when code_stop => wait; --Declared by us. Opcode is the only invalid OP-Code "111 1111"
             
-            --Load OP
+---------------------       
             when code_load =>
                 --we have Instruction Typ-L
                 --get Parameters
@@ -97,6 +116,8 @@ BEGIN
                 case func3 is 
                     when 0 =>
                     --Load byte
+                        --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
+                        trace(l,    Outputfile, PC, string'("LB"), imm, rs, 0,  rd);
                         --Needs to get the correct part of the 32Bit Mem_cell (Differenz=0: load first 8 LSB; =1 next 8Bit; ...)
                         case (addr-(load_addr*4)) is
                             when 0 =>
@@ -143,6 +164,8 @@ BEGIN
                         
                     when 1 =>
                     --Load Halfword
+                    --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
+                        trace(l,    Outputfile, PC, string'("LH"), imm, rs, 0,  rd);
                         --Needs to get the correct part of the 32Bit Mem_cell (Differenz=0: load 0 to 15 LSB; =1 load 8 to 23Bit; ...)
                         case (addr-(load_addr*4)) is
                             when 0 =>
@@ -200,6 +223,8 @@ BEGIN
                         Reg(rd) := Data32Bit;
                     when 2 =>
                     --Load Word
+                    --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
+                        trace(l,    Outputfile, PC, string'("LW"), imm, rs, 0,  rd);
                         --can just load the 32Bit cell. what if start adress is 103. then we need to load 103, 104, 105 and 106 (8Bit size)
                         --3 cases with each 4 loops
                         case (addr-(load_addr*4)) is
@@ -246,6 +271,8 @@ BEGIN
                         
                     when 3 => 
                     --Load byte unsigned
+                        --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
+                        trace(l,    Outputfile, PC, string'("LBU"), imm, rs, 0,  rd);
                         --Copy upstairs, exchange fille up Data1(7) with '0'
                         --Needs to get the correct part of the 32Bit Mem_cell (Differenz=0: load first 8 LSB; =1 next 8Bit; ...)
                         case (addr-(load_addr*4)) is
@@ -292,6 +319,8 @@ BEGIN
                         
                     when 4 =>
                     --Load Word unsigned
+                    --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
+                        trace(l,    Outputfile, PC, string'("LHU"), imm, rs, 0,  rd);
                         --Copy upstairs, exchange fille up Data1(7) with '0'
                          --Needs to get the correct part of the 32Bit Mem_cell (Differenz=0: load 0 to 15 LSB; =1 load 8 to 23Bit; ...)
                         case (addr-(load_addr*4)) is
@@ -356,6 +385,7 @@ BEGIN
                         report "something is wrong with the Load func3 case. func3: " & integer'image(func3);
 
                 end case;
+---------------------                
             when code_store=>
                 --store decoding
                 --get func3 from instr. for S-Type func3 is bit 14 to 12
@@ -407,11 +437,84 @@ BEGIN
                         report "something is wrong with the Store func3 case. func3: " & integer'image(func3);
                 end case;
                 
-            when opcode_jump =>
-                --Jump Instruction JAL and JALR
-            
-            when opcode_Branch => --OR arithmetic
+---------------------                                    
+            when code_arithmetic =>
+                --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
                 
+
+---------------------                                
+            when code_arithmeticImm_nop =>
+                --Arithmetic OP (ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI) and NOP (ADDI with x0 x0 0)
+
+---------------------              
+            when code_jal =>
+                --Jump Instruction with no condition
+                --get rd
+                rd := (Inst /2**7) mod 2**5;
+                
+                --Convert Inst to Bit_vector wit 32Bit 
+                instbit := bit_vector(TO_SIGNED(Inst, 32));
+                 
+                --get imm by reorganzing Instr
+                --Because Signextended Imm 31 downto 20 is MSB of Inst
+                for i in 31 downto 20 LOOP
+                imm32bit(i) := InstBit(31);
+                end LOOP;
+                
+                --immBit 10 downto 12 are at Inst 19 downto 12
+                for i in 19 downto 12 LOOP
+                    imm32bit(i) := InstBit(i);
+                end LOOP;
+                
+                --immBit 11 is at Inst 20
+                imm32Bit(11) := InstBit(20);
+                
+                --immBit 10 downto 1 are in Inst 30 downto 21
+                for i in 30 downto 21 LOOP
+                    imm32bit(-20 + i) := InstBit(i);
+                end LOOP;
+                
+                --LSB is 0
+                imm32bit(0) := '0';
+                immInteger := TO_INTEGER(signed(imm32bit));
+                
+                --Trace
+                trace(l,    Outputfile, PC, string'("JAL"), immInteger, 0, 0,  rd);
+                --now calculate the given adress to the 32Bit format we are using
+                immInteger := immInteger/4;
+                --the Specification PDF says it jumps in 2Byte Steps, but because we dont have shortInstruction we can jump in 4Byte(word) steps
+                PC := (PC-1) + immInteger; --PC - 1, because after Loading Inst we directly increment it, which would be wrong adress by 1 here
+
+---------------------                
+            when code_jalr =>
+                --Jump with return adress
+                --get Parameters
+                rd := (Inst/2**7) mod 2**5;
+                --func3 can be ignored as there are no other instruction with same OP-Code
+                rs1 := (Inst/2**15) mod 2**5;
+                imm := (Inst/2**20) mod 2**12;
+                
+                --Trace
+                trace(l,    Outputfile, PC, string'("JALR"), imm, rs1, 0,  rd);
+                
+                --Instruction after Jump Inst save to rd
+                Reg(rd) := bit_vector(TO_UNSIGNED(PC, 32)); -- only Pc because it was incremented already
+                --set PC to Target address
+                PC := (rs1+Imm) / 4; --divided by 4, because Pc is addressing words and not halfword. Because we are not using ShortInstructions
+            
+---------------------
+            when code_Branch => 
+                --OR arithmetic
+                
+--------------------- 
+            when code_lui =>
+                --Load upper Imm 20Bit fills lower 12Bit with 0
+ 
+--------------------- 
+            when code_AUIPC =>
+                --Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+            
+---------------------                                           
             when others =>
                 --Error in OPCODE / or not implemented op-code
                 report "something is wrong with the OP-Code case. Op-Code(as integr): " & integer'image(to_integer(unsigned(OP))); --cant report Bit_vector transformed to integer
