@@ -36,7 +36,7 @@ procedure filetomemory (
           
           mem : inout mem_type) is 
           variable l : line;
-          variable s : string(30 downto 1);  --The line in the text file MUST be longer than this defined string
+          variable s : string(4 downto 1);  --The line in the text file MUST be longer than this defined string
           variable i : integer; -- bei Read integer, it only takes 1 number
           variable success : boolean;
           
