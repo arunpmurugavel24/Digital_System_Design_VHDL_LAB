@@ -21,7 +21,7 @@ package cpu_defs_pack is
     constant RegAddrSize    : integer := 5; 
 
     -- Type of Opcode --
-    constant opcode_type     : integer := 7;
+    constant opcode_type    : integer := 7;
 
 
     -- Definition of Types --
