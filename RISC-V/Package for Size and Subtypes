@@ -11,14 +11,14 @@ package cpu_defs_pack is
     constant MemoryAddrSize : AddrSize - BytesperWord;
 
     -- Data Wire of Bus, Memory Width --
-    constant BusDataSize    : integer := 16;
+    constant BusDataSize    : integer := 32;
 
     -- (maximum) Size of Interuction --
     constant InstrSize      : integer := 31;
 
     -- Sizes of Register --
     constant RegDataSize    : integer := 32;
-    constant RegAddrSize    : integer := 5; 
+    constant RegAddrSize    : integer := 16; 
 
     -- Type of Opcode --
     constant opcode_type    : integer := 7;
