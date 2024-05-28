@@ -1,16 +1,13 @@
 ----------------------------------------------------------------------------------
--- Company: 
+-- Company: Tiemo Schmidt, Hian Zing Voon,
 -- Engineer: 
 -- 
 -- Create Date: 05/15/2024 04:24:26 PM
--- Design Name: Tiemo Schmidt, Hian Zing Voon, 
+-- Design Name:  
 -- Module Name: System - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
+-- Project Name: Risc V functional CPU 
+-- Description: The TLE of a RISC V CPU. It contains the code to load the Instructions from
+--              the Memory, decoding them and then perform them.
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
@@ -49,7 +46,11 @@ BEGIN
         --Register inside CPU
         variable Reg : reg_type;
         --Memory outside CPU
-        variable Mem : mem_type;
+        variable Mem : mem_type := (--0 => "00000000000000000000000000000000",
+                                    0 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
+                                    64635 downto 64535 => "00010000000000100000000010000000",
+                                    64735 downto 64636 => "10010000000000100000000010000000",
+                                    others => "00000000000000000000000000000000");
    --!!!!!The Memory initialitation here (the function name)
         
         --Programm Counter Addresses are in integer format
@@ -57,7 +58,7 @@ BEGIN
         --Instruction is a 32Bit_vector, But we work it as Integer
         variable Inst : bit_vector(31 downto 0);             --working with int is too complicatet if you need to shift right a negativ nr 
         --Decoded Instruction Parameter
-        variable op : opcode_type;--Maybe integer or Opcode. Skript says Instruction is integer --Biggest Nr. without bbb=111 is 11 110 11=124, smallest Nr is 00 000 11
+        variable OP : opcode_type;--Maybe integer or Opcode. Skript says Instruction is integer --Biggest Nr. without bbb=111 is 11 110 11=124, smallest Nr is 00 000 11
         variable ErrorOP : String(8 downto 1);
         --For I-Type instruction
         variable imm : integer RANGE 4095 downto 0;
@@ -98,16 +99,21 @@ BEGIN
         --Create Output Header
         trace_Header(l, Outputfile);
         --get Instruction
-        Inst := Mem(rs);  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
+        Inst := Mem(PC);  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
         --PC count up
         PC := PC + 1;
         
         --decode Inst: get OP-CODE
-        OP := Inst(7 downto 0); --gets the last 7Bit as integer
-        
+        OP := Inst(6 downto 0); --gets the last 7Bit as integer
+
         case OP is
          
-            when code_stop => wait; --Declared by us. Opcode is the only invalid OP-Code "111 1111"
+            when code_stop => 
+                --we implemented it as a way to stop the simulation and start the Mem_dump
+                --opcode is the only illegal Opcode "111 1111"
+                trace(l, Outputfile, PC, "stop", 0, 0, 0, 0);
+                mem_dump(l, Outputfile, mem);
+                wait; 
 ---------------------            
 --MADE BY TIEMO SCHMITD            
 ---------------------       
@@ -459,7 +465,8 @@ BEGIN
             when code_arithmetic =>
                 --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
                 
-
+---------------------
+--MADE BY
 ---------------------                                
             when code_arithmeticImm_nop =>
                 --Arithmetic OP (ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI) and NOP (ADDI with x0 x0 0)
@@ -522,10 +529,89 @@ BEGIN
                 PC := (rs1+Imm) / 4; --divided by 4, because Pc is addressing words and not halfword. Because we are not using ShortInstructions
             
 ---------------------            
---MADE BY             
+--MADE BY Tiemo SCHMIDT            
 ---------------------  
             when code_Branch => 
-                --OR arithmetic
+                --compares the two registers and then adds imm ontop of current pc
+                func3 := TO_INTEGER(unsigned(Inst(14 downto 12)));                  --get func3
+                rs1 := TO_INTEGER(unsigned(Inst(19 downto 15)));                    --Register1
+                rs2 := TO_INTEGER(unsigned(Inst(24 downto 20)));                    --Register2
+                --Construct Imm
+                for i in 31 downto 12 LOOP
+                    imm32Bit(i) := Inst(31);
+                end LOOP;
+                imm32Bit(11) := Inst(7);
+                imm32Bit(10 downto 5) := Inst(30 downto 25);
+                imm32Bit(4 downto 2) := inst(11 downto 9);  --the way our Mem_access works we wont need the last 2 LSB from imm (1 and 0), so only 11 downto 9 and not 11 downto 8  
+                imm32Bit(1 downto 0) := "00";               --Set last two to 0, because we are working only with 32Bit inst and not short inst
+                imm := to_integer(signed(imm32Bit));
+                
+                case func3 is 
+                    when 0 =>
+                        --BEQ
+                        trace(l,    Outputfile, PC, string'("BEQ"), imm, rs1, rs2,  0);
+                        if Reg(rs1) = Reg(rs2) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when 1 =>
+                        --BNE
+                        trace(l,    Outputfile, PC, string'("BNE"), imm, rs1, rs2,  0);
+                        if Reg(rs1) /= Reg(rs2) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when 4 =>
+                        --BLT
+                        trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
+                        if signed(Reg(rs1)) < signed(Reg(rs2)) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when 5 =>
+                        --BGE
+                        trace(l,    Outputfile, PC, string'("BGE"), imm, rs1, rs2,  0);
+                        if signed(Reg(rs1)) >= signed(Reg(rs2)) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when 6 =>
+                        --BLTU
+                        trace(l,    Outputfile, PC, string'("BLTU"), imm, rs1, rs2,  0);
+                        if unsigned(Reg(rs1)) < unsigned(Reg(rs2)) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when 7 =>
+                        --BGEU
+                        trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
+                        if unsigned(Reg(rs1)) <= unsigned(Reg(rs2)) then
+                            --Jump
+                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                        else
+                            --dont do a jump
+                            --nothing
+                        end if;
+                    when others =>
+                        --Error
+                        report "something is wrong with the func3 Branch case. func3(as integr): " & integer'image(func3); --cant report Bit_vector transformed to integer
+                    
+                    end case;
                 
 ---------------------            
 --MADE BY             
@@ -540,7 +626,7 @@ BEGIN
                 --Build 32Bit address. For more context look at RiscV_spec.pdf P.19
             
 ---------------------            
---MADE BY             
+--MADE BY Tiemo SCHMIDT            
 ---------------------                                            
             when others =>
                 --Error in OPCODE / or not implemented op-code

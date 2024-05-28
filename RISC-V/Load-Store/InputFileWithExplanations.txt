@@ -1,0 +1,36 @@
+--This Inputfile is an Example file.
+--The real file needs to be without comments
+
+--Load the number 2.537.324
+LUI 619 5	--These are the upper 20bit loaded into Register 5
+AUIPC 1900 5	--these are the lower 12bit loaded into Register 5. Together they create 2.537.324
+
+--Load 2.000.000
+LUI 488	6	--if we shift 2.000.000 12 Bits to the right then we get 488	0000 0000 0001 1110 1000
+AUIPC 1.152 6	--lower 12 Bits of 2.000.000 make 1.152
+
+--Load 2.537.324 - 2.000.000 = 537.324
+Lui 131 8
+AUIPC 748 8
+
+--sub 
+sub  5 6 7	-- subtracts register6 (2.000.000) from register5 (2.537.324) and saves rsult in register 7
+
+--Load result adress into register
+Lui 15 30	--Loads the adress 64536 int register30
+AUIPC 3096 30
+
+--branch
+BEQ 7 8 4	--compares the nr in r7 and r8. if they are equal then it jumps 4 Instructions ahead
+
+--These instructions should not be executed if the code is correct
+AUIPC 1 9	--load 1 into register 9
+SW 30 9 0	--Load content of register 9 to the address saved in register 30 with the offset of 0
+
+--stop this branch part
+stop
+
+--Load 2 into resultcell 64536 if branch was successful
+AUIPC 2 9
+SW 30 9 0
+stop

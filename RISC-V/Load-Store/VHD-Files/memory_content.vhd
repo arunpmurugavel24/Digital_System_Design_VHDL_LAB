@@ -1,16 +1,13 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Hian Zing Voon
 -- 
 -- Create Date: 24.05.2024 11:00:29
 -- Design Name: 
 -- Module Name: memory_content - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
+-- Project Name: Risc V functional CPU 
+-- Description: the functions for Loading the assembler txt file, transforming it into a 
+--              32Bit bit_vector and then saving it to the Memory.
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
