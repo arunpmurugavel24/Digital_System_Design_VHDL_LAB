@@ -3,34 +3,81 @@
 
 --Load the number 2.537.324
 LUI 619 5	--These are the upper 20bit loaded into Register 5
-AUIPC 1900 5	--these are the lower 12bit loaded into Register 5. Together they create 2.537.324
+ADDI 5 1900 5	--AFTER the LUI Instruction r5 contains the value 2.535.424. now we add 1900 to make 2.537.324 and save it in r5 again
 
 --Load 2.000.000
-LUI 488	6	--if we shift 2.000.000 12 Bits to the right then we get 488	0000 0000 0001 1110 1000
-AUIPC 1.152 6	--lower 12 Bits of 2.000.000 make 1.152
+LUI 488	6	--if we shift 2.000.000 12 Bits to the right then we get 488	0000 0000 0001 1110 1000 
+ADDI 6 1.152 6	--adds 1.152 to r6 to make 2.000.000
 
 --Load 2.537.324 - 2.000.000 = 537.324
 Lui 131 8
-AUIPC 748 8
+ADDI 8 748 8 
 
 --sub 
 sub  5 6 7	-- subtracts register6 (2.000.000) from register5 (2.537.324) and saves rsult in register 7
 
 --Load result adress into register
-Lui 15 30	--Loads the adress 64536 int register30
-AUIPC 3096 30
+Lui 15 30	--Loads the adress 64536*4 int register30 (why do we multiply 64536 with 4? Becaues the adresses are per Byte, so we need to multiplay by 4 to get the right Byte address. in the programm we will divide by 4 to get the correct word address.
+Addi 30 3096 30
 
 --branch
 BEQ 7 8 4	--compares the nr in r7 and r8. if they are equal then it jumps 4 Instructions ahead
 
 --These instructions should not be executed if the code is correct
-AUIPC 1 9	--load 1 into register 9
+addi 0 1 9	--add 1 to r0(hardwired 0) and saves it into r9
 SW 30 9 0	--Load content of register 9 to the address saved in register 30 with the offset of 0
 
 --stop this branch part
 stop
 
 --Load 2 into resultcell 64536 if branch was successful
-AUIPC 2 9
+Addi 0 2 9 	--adds 2 to r0(hardwired 0) and saves it in r9
 SW 30 9 0
 stop
+
+
+--All the commands, but in typical Programming Explanations form
+--with rs1 is the content of register rs1 meant.
+--imm is an integer with varying size, depending on the command
+--Maybe programm a catch if imm is to big
+Addi [rs1] [imm] [rd]	--rd = rs1 + imm	[imm size: +-2^11]
+SLTI [rs1] [imm] [rd] 	--rd = 1 if(rs1 < imm), rd=0 if(rs1>=imm) [imm size: +-2^11]
+SLTIU [rs1] [imm] [rd] 	--rd = 1 if(unsigend(rs1) < unsigned(signed(imm, 32)), rd=0 if(unsigned(rs1) >= unsigned(signed(imm, 32))), Imm gets SIGNED_Extended to 32Bit (fileld up with MSB) and THEN gets treated as unsigned [imm size: +-2^11]
+ANDI [rs1] [imm] [rd]	--rd = rs1 AND imm 	[imm size: +-2^11]
+ORI [rs1] [imm] [rd]	--rd = rs1 OR imm 	[imm size: +-2^11]
+XORI [rs1] [imm] [rd]	--rd = rs1 XOR imm	[imm size: +-2^11]
+SLLI [rs1] [imm] [rd]	--rd = rs1 shifted left the nr in imm times (zeros is shifted in on the lsb)		[imm size: +2^5]
+SRLI [rs1] [imm] [rd]	--rd = rs1 shifted right the nr in imm times (zeros are shifted in on the MSB)		[imm size: +2^5]
+SRAI [rs1] [imm] [rd]	--rd = rs1 shifted right the nr in imm times (MSB is shifted in ont the MSB)		[imm size: +2^5], but bit10 needs to be a 1 (only difference between SRLI and SRAI)
+LUI [rd] [imm]		--upper 20Bits of rd are imm		[imm size: +-2^19]
+AUPIC [rd] [imm]	--lower 12Bits of imm get turned into 0, adds this to the current PC(address) and saves it to rd		[imm size: +-2^19]
+ADD [rs1] [rs2] [rd]	--rd = rs1 + rs2	
+SLT [rs1] [rs2] [rd]	--rd = 1 if(rs1<rs2), rd = 0 if (rs1>=rs2)
+SLTU [rs1] [rs2] [rd]	--rd = 1 if(unsigned(rs1)<unsigned(rs2)), rd = 0 if (unsigned(rs1)>=unsigned(rs2))
+AND [rs1] [rs2] [rd]	--rd = rs1 AND rs2
+OR [rs1] [rs2] [rd]	--rd = rs1 OR rs2
+XOR [rs1] [rs2] [rd]	--rd = rs1 XOR rs2
+SLL [rs1] [rs2] [rd]	--rd = rs1 left shift by the value in the lower 5Bits of rs2 (zero shifted in)
+SRL [rs1] [rs2] [rd]	--rd = rs1 right shift by the value in the lower 5Bits of rs2 (zero shifted in)
+SUB [rs1] [rs2] [rd]	--rd = rs1 - rs2
+SRA [rs1] [rs2] [rd]	--rd = rs1 right shifted by the value in the lower 5Bits of rs2 (MSB shifted in)
+NOP 			--no operation
+JAL [rd] [imm]		--Jump to address saved in rs1 plus imm			[imm size: +-2^19] but lowest 2bits get turned to 0
+JALR [rs1] [rd] [imm]	--save next PC in rd and jump to address saved in rs1 plus imm		[imm size: +-2^11] but lowest 2 bit get turned to 0
+BEQ [rs1] [rs2] [imm]	--if(rs1 == rs2) then jump imm addresses ahead		[imm size: +-2^11]
+BNE [rs1] [rs2] [imm]	--if(rs1 /= rs2) then jump imm addresses ahead		[imm size: +-2^11]
+BLT [rs1] [rs2] [imm]	--if(rs1 < rs2) then jump imm addresses ahead		[imm size: +-2^11]
+BLTU [rs1] [rs2] [imm]  --if(unsigned(rs1) < unsigned(rs2)) then jump imm addresses ahead	[imm size: +-2^11]
+BGE [rs1] [rs2] [imm]	--if(rs1 > rs2) then jump imm addresses ahead		[imm size: +-2^11]
+BGEU [rs1] [rs2] [imm]  --if(unsigned(rs1) < unsigned(rs2)) then jump imm addresses ahead	[imm size: +-2^11]
+LB [rs1] [rd] [imm]	--Loads the Byte of the address in rs1 + imm, sign extends it and saves it to rd		[imm size: +-2^11]
+LH [rs1] [rd] [imm]	--Loads the bytes of the address in rs1 + imm and the next higher one, sign extends it and saves it to rd  	[imm size: +-2^11]
+LW [rs1] [rd] [imm]	--Loads the bytes of the address in rs1 + imm and the next 3 higher ones and saves it to rd	[imm size: +-2^11]
+LBU [rs1] [rd] [imm]	--Loads the Byte of the address in rs1 + imm, zero extends it and saves it to rd		[imm size: +-2^11]
+LHU [rs1] [rd] [imm]    --Loads the Bytes of the address in rs1 + imm and next higher one, zero extends it and saves it to rd		[imm size: +-2^11]
+SB [rs1] [rs2] [imm]	--Stores the lower 8Bit(signe_extended) from rs2 to the adress given in rs1 + imm		[imm size: +-2^11]
+SH [rs1] [rs2] [imm]	--Stores the lower 16Bit(signe_Extended) from rs2 to the adress given in rs1 + imm		[imm size: +-2^11]
+SW [rs1] [rs2] [imm]	--Stores the value in rs2 to the address given in rs1 + imm		[imm size: +-2^11]
+SBU [rs1] [rs2] [imm]	--Stores the lower 8Bit(zero_extended) from rs2 to the adress given in rs1 + imm		[imm size: +-2^11]		
+SHU [rs1] [rs2] [imm]	--Stores the lower 16Bit(zero extended) from rs2 to the adress given in rs1 + imm		[imm size: +-2^11]
+STOP			--Stops the programm
