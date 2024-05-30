@@ -620,10 +620,11 @@ BEGIN
                 --Load upper Imm 20Bit fills lower 12Bit with 0
  
 ---------------------            
---MADE BY             
+--MADE BY Yu-Hung TSAI            
 ---------------------  
             when code_AUIPC =>
                 --Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+                              
             
 ---------------------            
 --MADE BY Tiemo SCHMIDT            
