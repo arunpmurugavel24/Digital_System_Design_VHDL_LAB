@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- Company: Tiemo Schmidt, Hian Zing Voon,
+-- Company: Tiemo Schmidt, Hian Zing Voon, Yu-Hung Tsai
 -- Engineer: 
 -- 
 -- Create Date: 05/15/2024 04:24:26 PM
@@ -87,7 +87,10 @@ BEGIN
         variable immInteger : integer RANGE 2**20-1 downto 0;
           
         --For R-Type Instruction
-        
+
+        --For AUIPC Instruction 
+        variable pc_offset: bit_vector(31 downto 0);
+        variable new_pc   : bit_vector(31 downto 0);
         
         --Begin running the Programm  
         BEGIN
@@ -623,9 +626,26 @@ BEGIN
 --MADE BY Yu-Hung TSAI            
 ---------------------  
             when code_AUIPC =>
-                --Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+                -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+                -- get Parameters
+                imm := TO_INTEGER(signed(Inst(31 downto 12))); 
+                rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
+                OP := Inst(6 downto 0);  
+                
+                -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
+                pc_offset <= imm & "000000000000";
+                
+                -- Calculate the new PC value by adding the offset to the current PC
+                new_pc <= bit_vector(unsigned(PC) + unsigned(pc_offset));
+                
+                -- Store the result in the destination register
+                Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
+
+            when others =>
+                -- Error                             
+                report "something is wrong with the AUIPC. "
+
                               
-            
 ---------------------            
 --MADE BY Tiemo SCHMIDT            
 ---------------------                                            
