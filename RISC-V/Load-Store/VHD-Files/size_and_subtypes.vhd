@@ -45,6 +45,9 @@ package cpu_defs_pack is
     
     
     -- Definition of Opcode --
+
+    -- Stop Instruction --
+    constant code_stop : opcode_type := "1111111";
     
     -- Load and Store PC Instructions --
     constant code_ldpc : opcode_type := "0000011";
