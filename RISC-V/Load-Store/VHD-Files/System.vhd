@@ -106,7 +106,8 @@ BEGIN
         --Create Output Header
         trace_Header(l, Outputfile);
         --get Instruction
-        
+    
+    --Loop so that tracer_header doesnt get called each time the next instruction is fetched    
     while stop_detected LOOP
         Inst := Mem(PC);  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
         --PC count up
