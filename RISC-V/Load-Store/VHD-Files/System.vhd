@@ -637,7 +637,7 @@ BEGIN
 				Reg(rd) := imm32Bit;  --By default it's 32 zeros, so it is already 
 				
 ---------------------            
-MADE BY Yu-Hung TSAI 
+--MADE BY Yu-Hung TSAI 
 --------------------- 				                              
             when code_AUIPC =>
             -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
