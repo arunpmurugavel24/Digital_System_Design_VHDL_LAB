@@ -43,6 +43,7 @@ BEGIN
         
         
         --Variable declaration
+        variable stop_detected : boolean := true; 
         --Register inside CPU
         variable Reg : Reg_Type;
         --Memory outside CPU
@@ -101,6 +102,8 @@ BEGIN
         --Create Output Header
         trace_Header(l, Outputfile);
         --get Instruction
+        
+    while stop_detected LOOP
         Inst := Mem(PC);  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
         --PC count up
         PC := PC + 1;
@@ -113,11 +116,11 @@ BEGIN
             when code_stop => 
                 --we implemented it as a way to stop the simulation and start the Mem_dump
                 --opcode is the only illegal Opcode "111 1111"
+                stop_detected := false;
                 trace(l, Outputfile, PC, "stop", 0, 0, 0, 0);
-                mem_dump(l, Outputfile, mem);
-                wait; 
+
 ---------------------            
---MADE BY TIEMO SCHMITD            
+--MADE BY TIEMO SCHMITD           
 ---------------------       
             when code_load =>
                 --we have Instruction Typ-L
@@ -659,6 +662,11 @@ BEGIN
             when others =>
                 --Error in OPCODE / or not implemented op-code
                 report "something is wrong with the OP-Code case. Op-Code(as integr): " & integer'image(to_integer(unsigned(OP))); --cant report Bit_vector transformed to integer
-        end case;        
+        end case;
+    end LOOP;
+        --stop_detected got set to false, stop programm and dump memory
+        mem_dump(l, Outputfile, mem);
+        wait;
+                 
         END process;
 end Behavioral;
