@@ -448,7 +448,7 @@ BEGIN
                         for i in 31 downto 8 LOOP
                             Data32Bit(i) := Data32Bit(7);
                         end LOOP;
-                        Mem(rs1+Imm) := Data32Bit;
+                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
                         
                     when 1 =>
                         --store Halfword
@@ -458,7 +458,7 @@ BEGIN
                         for i in 31 downto 16 LOOP
                             Data32Bit(i) := Data32Bit(15);
                         end LOOP;
-                        Mem(rs1+Imm) := Data32Bit;
+                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
                       
                     when 2 =>
                         --store word
