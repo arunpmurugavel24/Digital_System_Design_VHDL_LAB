@@ -44,9 +44,9 @@ BEGIN
         
         --Variable declaration
         --Register inside CPU
-        variable Reg : RegType;
+        variable Reg : Reg_Type;
         --Memory outside CPU
-        variable Mem : MemType := (--0 => "00000000000000000000000000000000",
+        variable Mem : Mem_Type := (--0 => "00000000000000000000000000000000",
                                     0 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
                                     64635 downto 64535 => "00010000000000100000000010000000",
                                     64735 downto 64636 => "10010000000000100000000010000000",
