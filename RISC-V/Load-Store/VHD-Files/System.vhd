@@ -635,10 +635,10 @@ BEGIN
                 pc_offset <= imm & "000000000000";
                 
                 -- Calculate the new PC value by adding the offset to the current PC
-                new_pc <= std_logic_vector(unsigned(PC) + unsigned(pc_offset));
+                new_pc <= bit_vector(unsigned(PC) + unsigned(pc_offset));
                 
                 -- Store the result in the destination register
-                Reg(to_integer(unsigned(rd))) <= new_pc;
+                Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
 
             when others =>
                 -- Error in AUIPC
