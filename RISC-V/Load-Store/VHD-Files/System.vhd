@@ -552,7 +552,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BEQ"), imm, rs1, rs2,  0);
                         if Reg(rs1) = Reg(rs2) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -562,7 +562,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BNE"), imm, rs1, rs2,  0);
                         if Reg(rs1) /= Reg(rs2) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -572,7 +572,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
                         if signed(Reg(rs1)) < signed(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -582,7 +582,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BGE"), imm, rs1, rs2,  0);
                         if signed(Reg(rs1)) >= signed(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -592,7 +592,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLTU"), imm, rs1, rs2,  0);
                         if unsigned(Reg(rs1)) < unsigned(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -602,7 +602,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
                         if unsigned(Reg(rs1)) <= unsigned(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
