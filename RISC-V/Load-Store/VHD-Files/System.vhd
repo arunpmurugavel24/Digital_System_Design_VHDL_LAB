@@ -98,7 +98,6 @@ BEGIN
         
         --For R-Type Instruction
         -- For AUIPC Instruction 
-        variable pc_offset: bit_vector(31 downto 0);
         variable new_pc   : bit_vector(31 downto 0);
         
         --Begin running the Programm  
@@ -647,22 +646,24 @@ BEGIN
 				Reg(rd) := imm32Bit;  --By default it's 32 zeros, so it is already 
 				
 ---------------------            
---MADE BY Yu-Hung TSAI            
-                        
---            when code_AUIPC =>
---            -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
---                imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
---                rd  := TO_INTEGER(unsigned(Inst(11 downto 7)));
---                op  := TO_INTEGER(unsigned(Inst(6 downto 0)));
+--MADE BY Yu-Hung TSAI 
+--------------------- 				                              
+            when code_AUIPC =>
+            -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+                imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
+                rd  := TO_INTEGER(unsigned(Inst(11 downto 7)));
+                op  := Inst(6 downto 0);
+                
+                -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
+                imm32Bit (31 downto 12) := Inst(31 downto 12);				
+                
 
---                -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
---                pc_offset <= imm & "000000000000";
+                -- Calculate the new PC value by adding the offset to the current PC
+                new_pc :=  PC + TO_INTEGER(signed(imm32Bit));
                 
---                -- Calculate the new PC value by adding the offset to the current PC
---                new_pc <= bit_vector(unsigned(PC) + unsigned(pc_offset));
+                -- Store the result in the destination register
+                Reg(rd) := bit_vector(TO_SIGNED(new_pc, 32));
                 
---                -- Store the result in the destination register
---                Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
 
 ---------------------            
 --MADE BY Tiemo SCHMIDT            
