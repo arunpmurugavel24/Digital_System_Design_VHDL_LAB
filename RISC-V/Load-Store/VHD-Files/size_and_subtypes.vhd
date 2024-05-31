@@ -8,7 +8,7 @@ package cpu_defs_pack is
     -- PC, Addr Wire of Bus, Memory Depth --
     constant AddrSize       : integer := 16;
     constant BytesperWord   : integer := 2;
-    constant MemoryAddrSize : AddrSize - BytesperWord;
+    --constant MemoryAddrSize : bit_vector(AddrSize - BytesperWord);
 
     -- Data Wire of Bus, Memory Width --
     constant BusDataSize    : integer := 16;
@@ -21,8 +21,7 @@ package cpu_defs_pack is
     constant RegAddrSize    : integer := 5; 
 
     -- Type of Opcode --
-    constant opcode_type    : integer := 7;
-
+    subtype opcode_type is bit_vector(6 downto 0);
 
     -- Definition of Types --
 	subtype AddrType is bit_vector
@@ -41,14 +40,14 @@ package cpu_defs_pack is
     	(integer range 2**RegAddrSize-1 downto 0) of RegDataType;
 		
 	type MemType is array
-    	(integer range 2**MemAddrSize-1 downto 0) of BusDataType;
-    
+    	--(integer range 2**MemAddrSize-1 downto 0) of BusDataType;
+        (65535 downto 0) of bit_vector(31 downto 0);
     
     -- Definition of Opcode --
-    
-    -- Stop Intruction --
+
+    -- Stop Instruction --
     constant code_stop : opcode_type := "1111111";
-    
+
     -- Load and Store PC Instructions --
     constant code_load  : opcode_type := "0000011";
     constant code_store : opcode_type := "0100011";

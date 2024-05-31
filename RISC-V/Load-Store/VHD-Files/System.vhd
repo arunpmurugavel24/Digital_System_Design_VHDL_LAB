@@ -87,7 +87,6 @@ BEGIN
         variable immInteger : integer RANGE 2**20-1 downto 0;
           
         --For R-Type Instruction
-
         -- For AUIPC Instruction 
         variable pc_offset: bit_vector(31 downto 0);
         variable new_pc   : bit_vector(31 downto 0);
@@ -463,7 +462,7 @@ BEGIN
                 end case;
                 
 ---------------------            
---MADE BY Hian Zing Voon            
+--MADE BY             
 ---------------------                                                    
             when code_arithmetic =>
                 --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
@@ -617,14 +616,22 @@ BEGIN
                     end case;
                 
 ---------------------            
---MADE BY             
+--MADE BY HIAN ZING VOON        
 ---------------------  
-            when code_lui =>
-                --Load upper Imm 20Bit fills lower 12Bit with 0
- 
+            when code_lui =>  -- LUI is used with ADDI to load a 32-bit constant (RISCV pdf pg. 8)
+                --LUI := Load upper immediate. It places imm in the top 20 bits, then fills lower 12 bits with 0
+				imm := TO_INTEGER(unsigned(Inst(31 downto 12)));				
+				rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
+				
+				-- Sign extend and shift imm 
+				imm_lui <= signed(imm & "000000000000");
+				
+				-- Save to register
+				Reg(rd);
+				
 ---------------------            
 --MADE BY Yu-Hung TSAI            
----------------------                           
+                        
             when code_AUIPC =>
             -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
                 imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
@@ -641,10 +648,11 @@ BEGIN
                 Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
 
             when others =>
+
                 -- Error in AUIPC
                 report "something is wrong with the AUIPC";
                 
-            
+
 ---------------------            
 --MADE BY Tiemo SCHMIDT            
 ---------------------                                            
