@@ -87,11 +87,7 @@ BEGIN
         variable immInteger : integer RANGE 2**20-1 downto 0;
           
         --For R-Type Instruction
-		
-		--For LUI Instruction
-		variable imm_lui : bit_vector(31 downto 0);
-		
-        --For AUIPC Instruction 
+        -- For AUIPC Instruction 
         variable pc_offset: bit_vector(31 downto 0);
         variable new_pc   : bit_vector(31 downto 0);
         
@@ -558,7 +554,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BEQ"), imm, rs1, rs2,  0);
                         if Reg(rs1) = Reg(rs2) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -568,7 +564,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BNE"), imm, rs1, rs2,  0);
                         if Reg(rs1) /= Reg(rs2) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -578,7 +574,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
                         if signed(Reg(rs1)) < signed(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -588,7 +584,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BGE"), imm, rs1, rs2,  0);
                         if signed(Reg(rs1)) >= signed(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -598,7 +594,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLTU"), imm, rs1, rs2,  0);
                         if unsigned(Reg(rs1)) < unsigned(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -608,7 +604,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("BLT"), imm, rs1, rs2,  0);
                         if unsigned(Reg(rs1)) <= unsigned(Reg(rs2)) then
                             --Jump
-                            PC := PC-1 + imm; --PC-1 because we are inkrementing it at the beginning
+                            PC := PC-1 + (imm/4); --PC-1 because we are inkrementing it at the beginning
                         else
                             --dont do a jump
                             --nothing
@@ -635,14 +631,13 @@ BEGIN
 				
 ---------------------            
 --MADE BY Yu-Hung TSAI            
----------------------  
+                        
             when code_AUIPC =>
-                -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
-                -- get Parameters
-                imm := TO_INTEGER(signed(Inst(31 downto 12))); 
-                rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
-                OP := Inst(6 downto 0);  
-                
+            -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+                imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
+                rd  := TO_INTEGER(unsigned(Inst(11 downto 7)));
+                op  := TO_INTEGER(unsigned(Inst(6 downto 0)));
+
                 -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
                 pc_offset <= imm & "000000000000";
                 
@@ -653,10 +648,11 @@ BEGIN
                 Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
 
             when others =>
-                -- Error                             
-                report "something is wrong with the AUIPC. "
 
-                              
+                -- Error in AUIPC
+                report "something is wrong with the AUIPC";
+                
+
 ---------------------            
 --MADE BY Tiemo SCHMIDT            
 ---------------------                                            
