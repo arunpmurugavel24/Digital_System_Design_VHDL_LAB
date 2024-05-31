@@ -8,7 +8,7 @@ package cpu_defs_pack is
     -- PC, Addr Wire of Bus, Memory Depth --
     constant AddrSize       : integer := 16;
     constant BytesperWord   : integer := 2;
-    constant MemoryAddrSize : integer := 16;
+    --constant MemoryAddrSize : bit_vector(AddrSize - BytesperWord);
 
     -- Data Wire of Bus, Memory Width --
     constant BusDataSize    : integer := 16;
@@ -36,11 +36,11 @@ package cpu_defs_pack is
 	subtype RegDataType is bit_vector
 		(RegDataSize-1 downto 0);
         
-	type RegType is array 
+	type Reg_Type is array 
     	(integer range 2**RegAddrSize-1 downto 0) of RegDataType;
 		
-	type MemType is array
-    	--(integer range 2**MemoryAddrSize-1 downto 0) of BusDataType;
+	type Mem_Type is array
+    	--(integer range 2**MemAddrSize-1 downto 0) of BusDataType;
         (65535 downto 0) of bit_vector(31 downto 0);
     
     -- Definition of Opcode --
@@ -49,27 +49,27 @@ package cpu_defs_pack is
     constant code_stop : opcode_type := "1111111";
 
     -- Load and Store PC Instructions --
-    constant code_load  : opcode_type := "0000011";
-    constant code_store : opcode_type := "0100011";
+    constant code_ldpc : opcode_type := "0000011";
+    constant code_stpc : opcode_type := "0100011";
 
     -- Logic and Arithmetic Instruction --
     -- SLLI, SRLI, SRAI, XORI, ORI, ANDI --
-    constant code_arithmeticImm_nop: opcode_type := "0010011";
-	
+    constant code_shift_i: opcode_type := "0010011"; 
+
     -- SLL, SRL, SRA, ADD, SUB, SLT, SLTU, XOR, OR, AND --
-    constant code_arithmetic: opcode_type := "0110011";
-	
+    constant code_shift_r: opcode_type := "0110011";
+
     -- Jump Instruction -- 
     constant code_jal : opcode_type := "1101111";
     constant code_jalr: opcode_type := "1100111";    
     
     -- LUI and AUIPC Instruction -- 
     constant code_lui  : opcode_type := "0110111";
-    constant code_AUIPC: opcode_type := "0010111"; 
-	
+    constant code_auipc: opcode_type := "0010111"; 
+
     -- Branch Instruction --
     -- BEQ, BNE, BLT, BGE, BLUT, BGEU --
-    constant code_Branch  : opcode_type := "0110111";
+    constant code_branch  : opcode_type := "0110111";
 
 
 end cpu_defs_pack;
