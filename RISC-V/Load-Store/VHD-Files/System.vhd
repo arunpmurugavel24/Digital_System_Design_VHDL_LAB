@@ -45,11 +45,16 @@ BEGIN
         --Variable declaration
         variable stop_detected : boolean := true; 
         --Register inside CPU
-        variable Reg : Reg_Type;
+        variable Reg : Reg_Type := (8 => "00000000000000001111110000010111",
+                                    7 => "00000000000010000000000000000000", 
+                                    others => "00000000000000000000000000000000"
+        );
         --Memory outside CPU
         variable Mem : Mem_Type := (--0 => "00000000000000000000000000000000",
-                                    0 => "01000000000000000000000111110111",
+                                    --0 => "00000000000000000100001110110111",    --LUI
+                                    0 => "00000000011101000010000000100011",    --SW --!!!!TEST VALUES NEED TO BE DELETED
                                     1 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
+                                    
                                     64635 downto 64535 => "00010000000000100000000010000000",
                                     64735 downto 64636 => "10010000000000100000000010000000",
                                     others => "00000000000000000000000000000000");
@@ -405,6 +410,7 @@ BEGIN
                             Data32Bit(i) := Data1(i);
                         end LOOP;
                         --save Data to rd
+                        
                         Reg(rd) := Data32Bit;
                         
                         
@@ -441,7 +447,7 @@ BEGIN
                         for i in 31 downto 8 LOOP
                             Data32Bit(i) := Data32Bit(7);
                         end LOOP;
-                        Mem(rs1+Imm) := Data32Bit;
+                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
                         
                     when 1 =>
                         --store Halfword
@@ -451,17 +457,19 @@ BEGIN
                         for i in 31 downto 16 LOOP
                             Data32Bit(i) := Data32Bit(15);
                         end LOOP;
-                        Mem(rs1+Imm) := Data32Bit;
+                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
                       
                     when 2 =>
                         --store word
-                        --takes lowest 8 Bit of Rs2 and stores it at rs1+imm
+                        --takes lowest 32 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
                         --Spec pdf doesnt say anything about sign_extend or unsign_extend. But we want to save the Data so sign_extend
-                        for i in 31 downto 24 LOOP
-                            Data32Bit(i) := Data32Bit(23);
-                        end LOOP;
-                        Mem(rs1+Imm) := Data32Bit;
+                                                
+                        trace(l, Outputfile, PC, string'("SW"), imm, rs1, rs2, 0);
+                        report("----It wont store, rs1: " & integer'image(rs1) & "  rs2: " & integer'image(rs2) & "  data: " & integer'image(to_integer(signed(data32bit))));
+                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
+                        
+                        
                             
                     when others =>
                         --error in Store
@@ -627,6 +635,7 @@ BEGIN
 ---------------------  
             when code_lui =>  -- LUI is used with ADDI to load a 32-bit constant (RISCV pdf pg. 8)
                 --LUI := Load upper immediate. It places imm in the top 20 bits, then fills lower 12 bits with 0
+				report("immLUI Befehl");
 				imm32Bit (31 downto 12) := Inst(31 downto 12);				
 				rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
 				
@@ -648,6 +657,7 @@ BEGIN
                 -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
                 imm32Bit (31 downto 12) := Inst(31 downto 12);				
                 
+
                 -- Calculate the new PC value by adding the offset to the current PC
                 new_pc :=  PC + TO_INTEGER(signed(imm32Bit));
                 
