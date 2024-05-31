@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-
+fortoday
 
 package cpu_defs_pack is
 
@@ -47,6 +47,9 @@ package cpu_defs_pack is
     -- Definition of Opcode --
 
     -- Stop Instruction --
+    constant code_stop : opcode_type := "1111111";
+    
+    -- Stop Intruction --
     constant code_stop : opcode_type := "1111111";
     
     -- Load and Store PC Instructions --
