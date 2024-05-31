@@ -631,7 +631,7 @@ BEGIN
 				
 ---------------------            
 --MADE BY Yu-Hung TSAI            
-                        
+---------------------                         
             when code_AUIPC =>
             -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
                 imm := TO_INTEGER(unsigned(Inst(31 downto 12)));

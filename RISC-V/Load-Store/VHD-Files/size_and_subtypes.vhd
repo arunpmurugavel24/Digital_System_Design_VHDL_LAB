@@ -8,7 +8,7 @@ package cpu_defs_pack is
     -- PC, Addr Wire of Bus, Memory Depth --
     constant AddrSize       : integer := 16;
     constant BytesperWord   : integer := 2;
-    --constant MemoryAddrSize : bit_vector(AddrSize - BytesperWord);
+    constant MemoryAddrSize : integer := 16;
 
     -- Data Wire of Bus, Memory Width --
     constant BusDataSize    : integer := 16;
@@ -40,7 +40,7 @@ package cpu_defs_pack is
     	(integer range 2**RegAddrSize-1 downto 0) of RegDataType;
 		
 	type MemType is array
-    	--(integer range 2**MemAddrSize-1 downto 0) of BusDataType;
+    	--(integer range 2**MemoryAddrSize-1 downto 0) of BusDataType;
         (65535 downto 0) of bit_vector(31 downto 0);
     
     -- Definition of Opcode --
