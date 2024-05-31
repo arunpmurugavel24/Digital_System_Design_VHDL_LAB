@@ -49,15 +49,15 @@ package cpu_defs_pack is
     constant code_stop : opcode_type := "1111111";
 
     -- Load and Store PC Instructions --
-    constant code_load  : opcode_type := "0000011";
-    constant code_store : opcode_type := "0100011";
+    constant code_ldpc : opcode_type := "0000011";
+    constant code_stpc : opcode_type := "0100011";
 
     -- Logic and Arithmetic Instruction --
     -- SLLI, SRLI, SRAI, XORI, ORI, ANDI --
-    constant code_arithmeticImm_nop: opcode_type := "0010011";
+    constant code_shift_i: opcode_type := "0010011"; 
 
     -- SLL, SRL, SRA, ADD, SUB, SLT, SLTU, XOR, OR, AND --
-    constant code_arithmetic: opcode_type := "0110011";
+    constant code_shift_r: opcode_type := "0110011";
 
     -- Jump Instruction -- 
     constant code_jal : opcode_type := "1101111";
@@ -65,11 +65,11 @@ package cpu_defs_pack is
     
     -- LUI and AUIPC Instruction -- 
     constant code_lui  : opcode_type := "0110111";
-    constant code_AUIPC: opcode_type := "0010111"; 
+    constant code_auipc: opcode_type := "0010111"; 
 
     -- Branch Instruction --
     -- BEQ, BNE, BLT, BGE, BLUT, BGEU --
-    constant code_Branch  : opcode_type := "0110111";
+    constant code_branch  : opcode_type := "0110111";
 
 
 end cpu_defs_pack;
