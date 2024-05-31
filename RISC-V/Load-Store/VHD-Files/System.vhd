@@ -37,8 +37,8 @@ BEGIN
 ---------------------  
     --Declarations
         --Output declarations
-        file inputFile : text open read_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\InputFile.txt";
-        file Outputfile : Text open write_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\trace.txt";
+        file inputFile : text open read_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\InputFile.txt";
+        file Outputfile : Text open write_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\trace.txt";
         variable l : line;
         
         
@@ -47,7 +47,8 @@ BEGIN
         variable Reg : Reg_Type;
         --Memory outside CPU
         variable Mem : Mem_Type := (--0 => "00000000000000000000000000000000",
-                                    0 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
+                                    0 => "01000000000000000000000111110111",
+                                    1 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
                                     64635 downto 64535 => "00010000000000100000000010000000",
                                     64735 downto 64636 => "10010000000000100000000010000000",
                                     others => "00000000000000000000000000000000");
@@ -83,9 +84,12 @@ BEGIN
         --For J-Type instruction Jump
         --rd is already defined
         variable InstBit : bit_vector (31 downto 0);    --Instruction as Bit, for easier disassamble     
-        variable imm32Bit : bit_vector(31 downto 0);    --Immidiet need to be reorganized, easyer done as bit_vector
+        variable imm32Bit : bit_vector(31 downto 0) := "00000000000000000000000000000000";    --Immidiet need to be reorganized, easyer done as bit_vector
         variable immInteger : integer RANGE 2**20-1 downto 0;
-          
+        
+        --For U-Type Instruction
+        variable imm_lui: bit_vector(31 downto 0);
+        
         --For R-Type Instruction
         -- For AUIPC Instruction 
         variable pc_offset: bit_vector(31 downto 0);
@@ -620,37 +624,37 @@ BEGIN
 ---------------------  
             when code_lui =>  -- LUI is used with ADDI to load a 32-bit constant (RISCV pdf pg. 8)
                 --LUI := Load upper immediate. It places imm in the top 20 bits, then fills lower 12 bits with 0
-				imm := TO_INTEGER(unsigned(Inst(31 downto 12)));				
+				imm32Bit (31 downto 12) := Inst(31 downto 12);				
 				rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
 				
-				-- Sign extend and shift imm 
-				imm_lui <= signed(imm & "000000000000");
-				
+				-- Trace/Output
+				trace(l, Outputfile, PC, string'("LUI"), to_Integer(signed(imm32Bit)), 0, 0,  rd);
+	               
 				-- Save to register
-				Reg(rd);
+				Reg(rd) := imm32Bit;  --By default it's 32 zeros, so it is already 
 				
 ---------------------            
 --MADE BY Yu-Hung TSAI            
----------------------                         
-            when code_AUIPC =>
-            -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
-                imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
-                rd  := TO_INTEGER(unsigned(Inst(11 downto 7)));
-                op  := TO_INTEGER(unsigned(Inst(6 downto 0)));
+                        
+--            when code_AUIPC =>
+--            -- Build 32Bit address. For more context look at RiscV_spec.pdf P.19
+--                imm := TO_INTEGER(unsigned(Inst(31 downto 12)));
+--                rd  := TO_INTEGER(unsigned(Inst(11 downto 7)));
+--                op  := TO_INTEGER(unsigned(Inst(6 downto 0)));
 
-                -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
-                pc_offset <= imm & "000000000000";
+--                -- Form the 32-bit offset from the 20-bit immediate and fill the lowest 12 bits with zeros
+--                pc_offset <= imm & "000000000000";
                 
-                -- Calculate the new PC value by adding the offset to the current PC
-                new_pc <= bit_vector(unsigned(PC) + unsigned(pc_offset));
+--                -- Calculate the new PC value by adding the offset to the current PC
+--                new_pc <= bit_vector(unsigned(PC) + unsigned(pc_offset));
                 
-                -- Store the result in the destination register
-                Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
+--                -- Store the result in the destination register
+--                Reg(TO_INTEGER(unsigned(rd))) <= new_pc;
 
-            when others =>
+--            when others =>
 
-                -- Error in AUIPC
-                report "something is wrong with the AUIPC";
+--                -- Error in AUIPC
+--                report "something is wrong with the AUIPC";
                 
 
 ---------------------            
