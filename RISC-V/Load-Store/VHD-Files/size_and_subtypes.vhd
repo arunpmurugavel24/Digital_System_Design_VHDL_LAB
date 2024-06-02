@@ -69,7 +69,7 @@ package cpu_defs_pack is
 
     -- Branch Instruction --
     -- BEQ, BNE, BLT, BGE, BLUT, BGEU --
-    constant code_Branch  : opcode_type := "0110111";
+    constant code_Branch  : opcode_type := "1100011";
 
 
 end cpu_defs_pack;
