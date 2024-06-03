@@ -481,7 +481,7 @@ BEGIN
 ---------------------                                                    
             when code_arithmetic =>
                 --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
-                --Arithmetic Descoding
+                --Arithmetic Decoding
                 --R Format
                 func3 := TO_INTEGER(unsigned(Inst(14 downto 12)));  --get other Parameter
                 rs1 := TO_INTEGER(unsigned(Inst(19 downto 15)));    --Source Register 1
