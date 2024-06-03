@@ -63,6 +63,33 @@ procedure filetomemory (
                     end if;
                 end if;
             end if;
+---------------------            
+--MADE BY Yu-Hung TSAI 
+---------------------
+        variable Instr_str : string(1 to 32);
+        variable opcode_str : string(1 to 7);
+        variable rd_str : string(1 to 5);
+        variable imm_str : string(1 to 20);        
+                                
+        if opcode_str = "0110111" then  -- U-type
+            imm_str := Instr_str(8 to 32);
+
+            opcode <= bit_vector(opcode_str);
+            imm_u <= bit_vector(imm_str);
+
+            binary_instr <= imm_u & rd & opcode;
+
+        elsif opcode_str = "1101111" then  -- J-type
+            imm_str := Instr_str(1 to 1) & Instr_str(2 to 10) & Instr_str(11 to 11) & Instr_str(12 to 19) & Instr_str(20 to 31);
+
+            opcode <= bit_vector(opcode_str);
+            imm_j <= bit_vector(imm_str);
+
+            binary_instr <= imm_j(20) & imm_j(10 downto 1) & imm_j(11) & imm_j(19 downto 12) & rd & opcode;
+        else
+            binary_instr <= (others => '0');
+        end if;
+
          
          --------------TEMP-------------------   
 --          while not endfile(f) loop
