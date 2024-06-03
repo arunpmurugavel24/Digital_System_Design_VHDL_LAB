@@ -71,14 +71,19 @@ BEGIN
         variable imm : integer RANGE 4095 downto 0;
         variable rs : integer RANGE 31 downto 0;
         variable func3: integer RANGE 7 downto 0;
+	variable func7 : integer RANGE 7 downto 0;
         variable rd : Integer Range 31 downto 0;
+	variable shamt : integer Range 31 downto 0; -- Shift Amount Bits
         variable addr: integer Range 2**16-1 downto 0; --the adress given in the Instruction (8Bit-Steps)
-        variable load_addr : integer RANGE 2**16-1 downto 0; --the calculated adress for the 32Bit Memory cell 
+        variable load_addr : integer RANGE 2**16-1 downto 0; --the calculated adress for the 32Bit Memory cell
+	variable DataIntTmp : integer RANGE 2**16-1 downto 0; -- Temporary Integer Variable
         variable Data : bit_vector(31 downto 0); --the whole bit_vector from Memory
         variable Data1 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data2 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data3 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data4 : Bit_vector(7 downto 0); --one Address is only 8Bit big
+	variable Data32Tmp : Bit_Vector(31 downto 0); -- Temporary 32 Bit Variable
+        variable Data32Tmp2 : Bit_Vector(31 downto 0); --Temporary 32 Bit Variable
         variable Data32Bit : Bit_vector(31 downto 0); --the final frankenstein Bitvector
         
         --For S-type instruction
