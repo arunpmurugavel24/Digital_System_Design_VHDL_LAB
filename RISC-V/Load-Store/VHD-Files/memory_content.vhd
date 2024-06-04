@@ -320,7 +320,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                         -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 7));  -- imm
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm
                         outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
                         outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
@@ -344,7 +344,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                         -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 7));  -- imm
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm
                         outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
                         outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
@@ -396,22 +396,19 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                          -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                         outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 1));  -- imm                        
+                         outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm                        
                          outputToMem32Bit(11 downto 7)  := bit_vector(to_unsigned(int1, 5));  -- rd
                          outputToMem32Bit(6 downto 0)   := opcode;  -- opcode
                         
                         -- Save outputToMem32Bit in 'Mem' --
                         Mem(PC) := outputToMem32Bit;
-
-                        end if;    
+                            
                     end if;
-                end if;                  
+                end if;
                 
-                
-                
-                
+                -- To stop the program --           
                 when code_stop =>
-                    stop_detected := false;  -- to stop the program
+                    stop_detected := false;
                 
                 when others =>
                     report("Something went wrong while trying to decode the input file. Please refer back to memory_content.vhd");
