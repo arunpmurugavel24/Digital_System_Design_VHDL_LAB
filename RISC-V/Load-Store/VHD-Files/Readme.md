@@ -138,27 +138,27 @@
 	*NOP*<br />   		
 	*NOP*
 
-- **Load Instruction Test**
-- Adress: 64551*4 or Rg28 + 64 has a -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
-*LBU   28 8 64* 	--LBU niedrigster Byte von der obrigen Zahl 93(0101 1101) in Rg8 <br />
-*SW    28 8 68* 	--Speichert Rg8(93) in 64552*4<br />
-*LBU   28 8 67* 	--LBU 2 Höchster Byte von der obrigen Zahl 255(1111 1111) in Rg8 <br />
-*SW    28 8 72* 	--Speichert Rg8(255) in 64553*4
-- LB ohne unsigned testen<br />
-*LB    28 8 67* 	--LBU Höchster Byte von der obrigen Zahl -1(1111 1111) in Rg8 <br />
-*SW    28 8 76* 	--Speichert Rg8(-1) in 64554*4
-- LH <br />
-*LH    28 8 66*	--LH die zwei höchsten byte -242(1111 1111 0000 1110)<br />
-*SW    28 8 80* 	--Speichert Rg8(-242) in 64555*4<br />
-*LHU   28 8 66* 	--LHU die zwei höchsten Byte 65.294(1111 1111 0000 1110)<br />
-*SW    28 8 84*	--Speichert Rg8(65.294) in 64556*4
-- LW<br />
-*LW    28 8 66*   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
-*SW    28 8 88*	--Speichert  Rg8(-15.859.107) in 64557*4
+- **Load Instruction Test**<br />
+Adress: 64551*4 or Rg28 + 64 has a -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
+	*LBU   28 8 64* 	--LBU niedrigster Byte von der obrigen Zahl 93(0101 1101) in Rg8 <br />
+	*SW    28 8 68* 	--Speichert Rg8(93) in 64552*4<br />
+	*LBU   28 8 67* 	--LBU 2 Höchster Byte von der obrigen Zahl 255(1111 1111) in Rg8 <br />
+	*SW    28 8 72* 	--Speichert Rg8(255) in 64553*4
+	- LB ohne unsigned testen<br />
+	*LB    28 8 67* 	--LBU Höchster Byte von der obrigen Zahl -1(1111 1111) in Rg8 <br />
+	*SW    28 8 76* 	--Speichert Rg8(-1) in 64554*4
+	- LH <br />
+	*LH    28 8 66*	--LH die zwei höchsten byte -242(1111 1111 0000 1110)<br />
+	*SW    28 8 80* 	--Speichert Rg8(-242) in 64555*4<br />
+	*LHU   28 8 66* 	--LHU die zwei höchsten Byte 65.294(1111 1111 0000 1110)<br />
+	*SW    28 8 84*	--Speichert Rg8(65.294) in 64556*4
+	- LW<br />
+	*LW    28 8 66*   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
+	*SW    28 8 88*	--Speichert  Rg8(-15.859.107) in 64557*4
 
 - **Test SB bei vollem Register Rg8**
-*SB    28 8 92*   --Sollte unterste Byte 93(0101 1101) in 64558*4 speichern<br />
-*stop* --Signalisiert Ende der Input datei und stop simulation mit wait
+	*SB    28 8 92*   --Sollte unterste Byte 93(0101 1101) in 64558*4 speichern<br />
+	*stop* --Signalisiert Ende der Input datei und stop simulation mit wait
 
 
 
