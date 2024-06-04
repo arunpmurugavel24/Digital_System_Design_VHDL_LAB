@@ -23,6 +23,7 @@ use work.cpu_defs_pack.all;
 use work.output_functions_pack.all;
 use std.textio.all;
 use work.mem_defs_pack.all;
+use work.conversion_pack.all;
 
 
 entity System is
@@ -445,16 +446,19 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("SB"), imm, rs1, rs2,  0);
                         --takes lowest 8 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
-                        --get the lower 8 
+                        --get the lower 8
+                        report("   LB whole rs2 Reg: " & bitVectortoString(Data32Bit)); 
                         Data1 := Data32Bit(7 downto 0);
+                        report("   LB whole Dat1 Reg: " & bitVectortoString(Data1)); 
                         --calculate Hardware address save it to only the given bit
-                        addr := to_integer(signed(Reg(rs1)));
+                        addr := to_integer(signed(Reg(rs1)))+imm;
                         load_addr := addr/4;
                         difference := addr - (load_addr*4);
                         
                         --Save the 8Bit to the correct place in Mem at load_addr
                         Mem(load_addr)(8*(difference+1)-1 downto 8*(difference+1)-8) := Data1;
-                        
+                        report("   LB whole Dat1 Reg: " & bitVectortoString(Mem(load_addr))); 
+
                     when 1 =>
                         --store Halfword
                         trace(l,    Outputfile, PC, string'("SH"), imm, rs1, rs2,  0);
@@ -462,9 +466,8 @@ BEGIN
                         Data32Bit := Reg(rs2);
                         Data1 := Data32Bit(15 downto 8);
                         Data2 := Data32Bit(7 downto 0);
-                        Data32Bit := "00000000000000000000000000000000";
                         --calculate Hardware address save it to only the given bit
-                        addr := to_integer(signed(Reg(rs1)));
+                        addr := to_integer(signed(Reg(rs1)))+imm;
                         load_addr := addr/4;
                         difference := addr - (load_addr*4);
                         case difference is 
@@ -483,12 +486,6 @@ BEGIN
                             Mem(load_addr)(31 downto 24) := Data2;
                         when others =>
                         end case;
-                        --Get the Data from the Hardware-Address 
-                        Data32Bit := Mem(load_addr);
-                        --now replace the 8 Bit depending on difference (0: lower 8 bits, 1: Bit 15 downto 7, 2: 23 downto 16, 3: 31 downto 24
-                        Data32Bit(8*(difference+1)-1 downto 8*(difference+1)-8) := Data1;
-                        --Save the changed 32Bits back to load_addr
-                        Mem(load_addr) := Data32Bit;
                         
                       
                     when 2 =>
@@ -496,7 +493,7 @@ BEGIN
                         trace(l,    Outputfile, PC, string'("SW"), imm, rs1, rs2,  0);
                         --takes lowest 32 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
-                        addr := to_integer(signed(Reg(rs1)));
+                        addr := to_integer(signed(Reg(rs1)))+imm;
                         load_addr := addr/4;
                         difference := addr - (load_addr*4);
                         --if difference is 0 then just save to Mem, otherwise it needs to be split
@@ -507,15 +504,15 @@ BEGIN
                             when 1 =>
                                 --save the lowest 24Bit to the the 24 MSB of the Mem(load_addr) and the highest 8Bit of rs2 to the lowest 8 Bit of Mem(load_addr+1)
                                 Mem(load_Addr)(31 downto 8) := Data32Bit(23 downto 0);
-                                Mem(load_Addr)(7 downto 0) := Data32Bit(31 downto 24);
+                                Mem(load_Addr+1)(7 downto 0) := Data32Bit(31 downto 24);
                             when 2 =>
                                 --save the lowest 16Bit to the the 16 MSB of the Mem(load_addr) and the highest 16Bit of rs2 to the lowest 16 Bit of Mem(load_addr+1)
                                 Mem(load_Addr)(31 downto 16) := Data32Bit(15 downto 0);
-                                Mem(load_Addr)(15 downto 0) := Data32Bit(31 downto 16);
+                                Mem(load_Addr+1)(15 downto 0) := Data32Bit(31 downto 16);
                             when 3=>
                                 --save the lowest 8Bit to the the 8 MSB of the Mem(load_addr) and the highest 24Bit of rs2 to the lowest 24 Bit of Mem(load_addr+1)
                                 Mem(load_Addr)(31 downto 24) := Data32Bit(7 downto 0);
-                                Mem(load_Addr)(23 downto 0) := Data32Bit(31 downto 8);
+                                Mem(load_Addr+1)(23 downto 0) := Data32Bit(31 downto 8);
                             when others=>
                                 report"Error: Store-Instruction Address Calculation. Difference took on a Value that shouldnt be possible" severity error;
                             end case;
@@ -561,7 +558,7 @@ BEGIN
                             rs2_low(i) := Data32Tmp2(i);
                         end Loop;
                         DataIntTmp := TO_INTEGER(unsigned(rs2_low));
-                        for i in 0 downto (31 - DataIntTmp) Loop
+                        for i in 0 to (31 - DataIntTmp) Loop
                             Data32Bit(i + DataIntTmp) := Data32Tmp(i);
                         end Loop;
                         Reg(rd) := Data32Bit;
@@ -613,7 +610,7 @@ BEGIN
                                     rs2_low(i) := Data32Tmp2(i);
                                 end Loop;
                                 DataIntTmp := TO_INTEGER(unsigned(rs2_low));
-                                for i in 31 to DataIntTmp Loop
+                                for i in 31 downto DataIntTmp Loop
                                     Data32Bit(i - DataIntTmp) := Data32Tmp(i);
                                 end Loop;
                                 Reg(rd) := Data32Bit;
@@ -646,17 +643,17 @@ BEGIN
                 case func3 is
                         when 0 =>
                             if (imm /= 0) then --ADDI
-                                trace(l, Outputfile, PC, string'("ADDI"), imm, rs1, rs2,  rd);
+                                trace(l, Outputfile, PC, string'("ADDI"), imm, rs1, 0,  rd);
                                 Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + imm), 32));
                             else --NOP
-                                trace(l, Outputfile, PC, string'("NOP"), imm, rs1, rs2,  rd);
+                                trace(l, Outputfile, PC, string'("NOP"), imm, rs1, 0,  rd);
                                 Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + 0), 32));
                             end if;
                     when 1 => --SLLI
                         trace(l, Outputfile, PC, string'("SLLI"), imm, rs1, rs2,  rd);
                         Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                         Data32Tmp := Reg(rs1);
-                        for i in 0 downto (31 - shamt) Loop
+                        for i in 0 to (31 - shamt) Loop
                             Data32Bit(i + shamt) := Data32Tmp(i);
                         end Loop;
                         Reg(rd) := Data32Bit;
@@ -683,7 +680,7 @@ BEGIN
                         Reg(rd) := Reg(rs1) xor bit_vector(to_signed(imm, 32));
                     when 5 =>
                         case func7 is
-                            when 0 => --SRA
+                            when 0 => --SRAi
                                 trace(l, Outputfile, PC, string'("SRA"), imm, rs1, rs2,  rd);
                                 Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                                 Data32Tmp := Reg(rs1);
@@ -694,11 +691,11 @@ BEGIN
                                     Data32Bit(j) := Data32Bit(31-shamt);
                                 end Loop;
                                 Reg(rd) := Data32Bit;
-                            when 32 => --SRL
+                            when 32 => --SRLi
                                 trace(l, Outputfile, PC, string'("SRL"), imm, rs1, rs2,  rd);
                                 Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                                 Data32Tmp := Reg(rs1);
-                                for i in 31 to shamt Loop
+                                for i in 31 downto shamt Loop
                                     Data32Bit(i - shamt) := Data32Tmp(i);
                                 end Loop;
                                 Reg(rd) := Data32Bit;
@@ -901,7 +898,7 @@ BEGIN
         end case;
     end LOOP;
         --stop_detected got set to false, stop programm and dump memory
-        mem_dump(l, Outputfile, mem);
+        mem_dump(l, Outputfile, mem, reg);
         wait;
                  
         END process;

@@ -250,7 +250,7 @@ procedure filetomemory (
                         if success then
                             
                             -- Declaration of funct3 & funct7 -- (if not defined, means default value of zeros will be used)
-                            if mnemonicsOpcodeIn = "SB   " then
+                            if mnemonicsOpcodeIn = "SH   " then
                                 funct3 := "001";
                             elsif mnemonicsOpcodeIn = "SW   " then
                                 funct3 := "010";
