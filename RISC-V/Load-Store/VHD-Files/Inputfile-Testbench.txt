@@ -1,59 +1,59 @@
-addi  0 8 6
-slti  6 9 7
-sltiu 6 -9 8
-addi  0 47 30
-addi  0 218 31
-andi  30 218 9
-ori   30 218 10
-xori  30 218 11
-andi  0 1 29
-slli  29 5 12
-srli  12 4 13
-lui   27 -61950
-addi  27 478 27
-srai  27 4 14
-lui   15 619
-auipc 16 606
-add   6 7 17
-slt   6 7 18
-sltu  6 7 19
-and   30 31 20
-or    30 31 21
-xor   30 31 22
-addi  0 4 28
-sll   29 28 23
-srl   12 28
-sub   6 7 25
-sra   27 28 27
+ADDI  0 8 6
+SLTI  6 9 7
+SLTIU 6 -9 8
+ADDI  0 47 30
+ADDI  0 218 31
+ANDI  30 218 9
+ORI   30 218 10
+XORI  30 218 11
+ANDI  0 1 29
+SLLI  29 5 12
+SRLI  12 4 13
+LUI   27 -61950
+ADDI  27 478 27
+SRAI  27 4 14
+LUI   15 619
+AUIPC 16 606
+ADD   6 7 17
+SLT   6 7 18
+SLTU  6 7 19
+AND   30 31 20
+OR    30 31 21
+XOR   30 31 22
+ADDI  0 4 28
+SLL   29 28 23
+SRL   12 28
+SUB   6 7 25
+SRA   27 28 27
 
---mit LUI und addi machen addi
-addi  0  258.140 28
+--MIT LUI UND ADDI MACHEN ADDI
+ADDI  0  258.140 28
 
-sb    28 1 0
-sb    28 2 1
-sb    28 3 2
-sb    28 4 3
-sh    28 5 4
-sh    28 6 6
-sw    28 7 8
-sw    28 8 12
-sw    28 9 16
-sw    28 10 20
-sw    28 11 24
-sw    28 12 28
-sw    28 13 32
-sw    28 14 36
-sw    28 15 40
-sw    28 16 44
-sw    28 17 48
-sw    28 18 52
-sw    28 19 56
-sw    28 20 60
-sw    28 21 64
-sw    28 22 68
-sw    28 23 72
-sw    28 24 76
-sw    28 25 80
-sw    28 26 84
-sw    28 27 88
+SB    28 1 0
+SB    28 2 1
+SB    28 3 2
+SB    28 4 3
+SH    28 5 4
+SH    28 6 6
+SW    28 7 8
+SW    28 8 12
+SW    28 9 16
+SW    28 10 20
+SW    28 11 24
+SW    28 12 28
+SW    28 13 32
+SW    28 14 36
+SW    28 15 40
+SW    28 16 44
+SW    28 17 48
+SW    28 18 52
+SW    28 19 56
+SW    28 20 60
+SW    28 21 64
+SW    28 22 68
+SW    28 23 72
+SW    28 24 76
+SW    28 25 80
+SW    28 26 84
+SW    28 27 88
 
