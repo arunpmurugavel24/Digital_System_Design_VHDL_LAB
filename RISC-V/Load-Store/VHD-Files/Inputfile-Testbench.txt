@@ -48,7 +48,44 @@ SW    28 23 52
 SW    28 24 56
 SW    28 25 60
 SW    28 26 64
-SW    28 27 68
-stop  
+stop
 
-aljsdhlugaef
+ADDI  0 0 6
+ADDI  0 4 7 
+NOP   	
+BEQ   6 7 12
+ADDI  6 1 6
+JAL   0 -12
+NOP
+BNE   6 7 12
+ADDI  6 -1 6
+JAL   0 -12
+BLT   7 6 12
+ADDI  6 1 6
+JAL   0 12
+BGE   6 7 12
+NOP		
+NOP
+ADDI  0 0 6
+ADDI  0 4 7 
+NOP   	
+BLTU  7 6 12
+ADDI  6 1 6
+JAL   0 12
+BGEU  6 7 12
+NOP   		
+NOP   
+LBU   28 8 64
+SW    28 8 68 
+LBU   28 8 67  
+SW    28 8 72 
+LB    28 8 67 
+SW    28 8 76
+LH    28 8 66
+SW    28 8 80 
+LHU   28 8 66
+SW    28 8 84
+LW    28 8 66
+SW    28 8 88
+SB    28 8 92
+STOP

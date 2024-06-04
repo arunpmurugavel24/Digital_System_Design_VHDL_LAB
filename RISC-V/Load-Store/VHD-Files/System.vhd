@@ -898,7 +898,7 @@ BEGIN
         end case;
     end LOOP;
         --stop_detected got set to false, stop programm and dump memory
-        mem_dump(l, Outputfile, mem, reg);
+        mem_dump(l, Outputfile, mem);
         wait;
                  
         END process;
