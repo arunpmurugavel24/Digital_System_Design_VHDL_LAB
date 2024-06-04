@@ -18,7 +18,7 @@
 **Mnemonics-Package:** Das ist ein Paket, um Opcodes wie "ADD" oder "XOR" in 'bit_vector' umzuwandeln, damit es bei der Dekodierung verwendet werden kann. 
 
 ### Inputfile-Testbench mit Kommentaren:
-- ADDI Test. 0+8 wird in reg6 abgespeichert<br />
+- ADDI Test. 0 + 8 wird in reg6 abgespeichert<br />
 	*ADDI  0 8 6*
 - SLTI Test. 8(in reg6)<9 dann 1 in Reg7 speichern<br />
 	*SLTI  6 9 7*
