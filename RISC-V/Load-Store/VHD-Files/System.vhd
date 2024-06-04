@@ -37,8 +37,8 @@ BEGIN
 ---------------------  
     --Declarations
         --Output declarations
-        file inputFile : text open read_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
-        file Outputfile : Text open write_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\trace.txt";
+        file inputFile : text open read_mode is "C:\Users\Tiemo Schmidt\Documents\VHDL-Ecker\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
+        file Outputfile : Text open write_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\trace.txt";
         variable l : line;
         
         
@@ -442,6 +442,7 @@ BEGIN
                 case func3 is 
                     when 0 =>
                         --store Byte 
+                        trace(l,    Outputfile, PC, string'("SB"), imm, rs1, rs2,  0);
                         --takes lowest 8 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
                         --get the lower 8 
@@ -456,6 +457,7 @@ BEGIN
                         
                     when 1 =>
                         --store Halfword
+                        trace(l,    Outputfile, PC, string'("SH"), imm, rs1, rs2,  0);
                         --takes lowest 16 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
                         Data1 := Data32Bit(15 downto 8);
@@ -491,6 +493,7 @@ BEGIN
                       
                     when 2 =>
                         --store word
+                        trace(l,    Outputfile, PC, string'("SW"), imm, rs1, rs2,  0);
                         --takes lowest 32 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
                         addr := to_integer(signed(Reg(rs1)));
@@ -639,6 +642,7 @@ BEGIN
                 imm := TO_INTEGER(signed(Inst(31 downto 20)));      -- Immediate Amount
                 shamt := TO_INTEGER(unsigned(Inst(24 downto 20)));  -- Shift Amount
                 func7 := TO_INTEGER(unsigned(Inst(31 downto 25)));  -- func7
+                report"!!!!!!!!!!!!!!!!!!!----------ARUN Arithmetic, PC: "& integer'image(PC) &" func3: " & integer'image(func3) & "   func7: " & integer'image(func7) & "   imm: " & integer'image(imm);
                 case func3 is
                         when 0 =>
                             if (imm /= 0) then --ADDI
@@ -883,6 +887,7 @@ BEGIN
                 -- Calculate the new PC value by adding the offset to the current PC
                 new_pc :=  PC + TO_INTEGER(signed(imm32Bit));
                 
+                trace(l,    Outputfile, PC, string'("AUIPC"), imm, 0, 0,  rd);
                 -- Store the result in the destination register
                 Reg(rd) := bit_vector(TO_SIGNED(new_pc, 32));
                 
