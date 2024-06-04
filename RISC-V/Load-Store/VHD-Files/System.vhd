@@ -45,20 +45,10 @@ BEGIN
         --Variable declaration
         variable stop_detected : boolean := true; 
         --Register inside CPU
-        variable Reg : Reg_Type := (8 => "00000000000000001111110000010111",
-                                    7 => "00000000000010000000000000000000", 
-                                    others => "00000000000000000000000000000000"
-        );
+        variable Reg : Reg_Type := (others => "00000000000000000000000000000000");
         --Memory outside CPU
-        variable Mem : Mem_Type := (--0 => "00000000000000000000000000000000",
-                                    --0 => "00000000000000000100001110110111",    --LUI
-                                    0 => "00000000011101000010000000100011",    --SW --!!!!TEST VALUES NEED TO BE DELETED
-                                    1 => "00000000000000000000000001111111",    --!!!!TEST VALUES NEED TO BE DELETED
-                                    
-                                    64635 downto 64535 => "00010000000000100000000010000000",
-                                    64735 downto 64636 => "10010000000000100000000010000000",
-                                    others => "00000000000000000000000000000000");
-   --!!!!!The Memory initialitation here (the function name)
+        variable Mem : Mem_Type := (others => "00000000000000000000000000000000");
+   
         
         --Programm Counter Addresses are in integer format
         variable PC : Integer :=0;
@@ -71,19 +61,22 @@ BEGIN
         variable imm : integer RANGE 4095 downto 0;
         variable rs : integer RANGE 31 downto 0;
         variable func3: integer RANGE 7 downto 0;
-	variable func7 : integer RANGE 7 downto 0;
+        variable func7 : integer RANGE 7 downto 0;
         variable rd : Integer Range 31 downto 0;
-	variable shamt : integer Range 31 downto 0; -- Shift Amount Bits
+        variable shamt : integer Range 31 downto 0; -- Shift Amount Bits
         variable addr: integer Range 2**16-1 downto 0; --the adress given in the Instruction (8Bit-Steps)
         variable load_addr : integer RANGE 2**16-1 downto 0; --the calculated adress for the 32Bit Memory cell
-	variable DataIntTmp : integer RANGE 2**16-1 downto 0; -- Temporary Integer Variable
+        variable difference : integer RANGE 0 to 3;          --Difference between the given software-address and the Hardware-addres*4
+        variable DataIntTmp : integer RANGE 2**16-1 downto 0; -- Temporary Integer Variable
+        variable rs2_low : bit_vector(4 downto 0);
         variable Data : bit_vector(31 downto 0); --the whole bit_vector from Memory
         variable Data1 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data2 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data3 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data4 : Bit_vector(7 downto 0); --one Address is only 8Bit big
-	variable Data32Tmp : Bit_Vector(31 downto 0); -- Temporary 32 Bit Variable
+        variable Data32Tmp : Bit_Vector(31 downto 0); -- Temporary 32 Bit Variable
         variable Data32Tmp2 : Bit_Vector(31 downto 0); --Temporary 32 Bit Variable
+               
         variable Data32Bit : Bit_vector(31 downto 0); --the final frankenstein Bitvector
         
         --For S-type instruction
@@ -103,7 +96,7 @@ BEGIN
         
         --For R-Type Instruction
         -- For AUIPC Instruction 
-        variable new_pc   : bit_vector(31 downto 0);
+        variable new_pc   : integer;
         
         --Begin running the Programm  
         BEGIN
@@ -118,6 +111,7 @@ BEGIN
     
     --Loop so that tracer_header doesnt get called each time the next instruction is fetched    
     while stop_detected LOOP
+        Reg(0) := "00000000000000000000000000000000"; --Our way of Hardwireing register x0 as '0'
         Inst := Mem(PC);  --The memory is defined as bit_vector, but the skript says that we work the instructions as integer
         --PC count up
         PC := PC + 1;
@@ -427,7 +421,7 @@ BEGIN
                 end case;
                 
 ---------------------            
---MADE BY TIEMO SCHMITD            
+--MADE BY TIEMO SCHMITD      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MUSS ADRESSING nochmal ändern      
 ---------------------
             when code_store=>
                 --store decoding
@@ -448,32 +442,79 @@ BEGIN
                         --store Byte 
                         --takes lowest 8 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
-                        --Spec pdf doesnt say anything about sign_extend or unsign_extend. But we want to save the Data so sign_extend
-                        for i in 31 downto 8 LOOP
-                            Data32Bit(i) := Data32Bit(7);
-                        end LOOP;
-                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
+                        --get the lower 8 
+                        Data1 := Data32Bit(7 downto 0);
+                        --calculate Hardware address save it to only the given bit
+                        addr := to_integer(signed(Reg(rs1)));
+                        load_addr := addr/4;
+                        difference := addr - (load_addr*4);
+                        
+                        --Save the 8Bit to the correct place in Mem at load_addr
+                        Mem(load_addr)(8*(difference+1)-1 downto 8*(difference+1)-8) := Data1;
                         
                     when 1 =>
                         --store Halfword
                         --takes lowest 16 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
-                        --Spec pdf doesnt say anything about sign_extend or unsign_extend. But we want to save the Data so sign_extend
-                        for i in 31 downto 16 LOOP
-                            Data32Bit(i) := Data32Bit(15);
-                        end LOOP;
-                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
+                        Data1 := Data32Bit(15 downto 8);
+                        Data2 := Data32Bit(7 downto 0);
+                        Data32Bit := "00000000000000000000000000000000";
+                        --calculate Hardware address save it to only the given bit
+                        addr := to_integer(signed(Reg(rs1)));
+                        load_addr := addr/4;
+                        difference := addr - (load_addr*4);
+                        case difference is 
+                        when 0 =>
+                            
+                            Mem(load_addr)(15 downto 8) := Data1;
+                            Mem(load_addr)(7 downto 0) := Data2;
+                        when 1 =>
+                            Mem(load_addr)(23 downto 16) := Data1;
+                            Mem(load_addr)(15 downto 8) := Data2;
+                        when 2 =>
+                            Mem(load_addr)(31 downto 24) := Data1;
+                            Mem(load_addr)(23 downto 16) := Data2;
+                        when 3 =>
+                            Mem(load_addr+1)(7 downto 0) := Data1;
+                            Mem(load_addr)(31 downto 24) := Data2;
+                        when others =>
+                        end case;
+                        --Get the Data from the Hardware-Address 
+                        Data32Bit := Mem(load_addr);
+                        --now replace the 8 Bit depending on difference (0: lower 8 bits, 1: Bit 15 downto 7, 2: 23 downto 16, 3: 31 downto 24
+                        Data32Bit(8*(difference+1)-1 downto 8*(difference+1)-8) := Data1;
+                        --Save the changed 32Bits back to load_addr
+                        Mem(load_addr) := Data32Bit;
+                        
                       
                     when 2 =>
                         --store word
                         --takes lowest 32 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
-                        --Spec pdf doesnt say anything about sign_extend or unsign_extend. But we want to save the Data so sign_extend
-                                                
-                        trace(l, Outputfile, PC, string'("SW"), imm, rs1, rs2, 0);
-                        report("----It wont store, rs1: " & integer'image(rs1) & "  rs2: " & integer'image(rs2) & "  data: " & integer'image(to_integer(signed(data32bit))));
-                        Mem(to_integer(signed(Reg(rs1)))+Imm) := Data32Bit;
-                        
+                        addr := to_integer(signed(Reg(rs1)));
+                        load_addr := addr/4;
+                        difference := addr - (load_addr*4);
+                        --if difference is 0 then just save to Mem, otherwise it needs to be split
+                        case difference is
+                            when 0 => 
+                                Mem(load_addr) := Data32Bit;
+                                
+                            when 1 =>
+                                --save the lowest 24Bit to the the 24 MSB of the Mem(load_addr) and the highest 8Bit of rs2 to the lowest 8 Bit of Mem(load_addr+1)
+                                Mem(load_Addr)(31 downto 8) := Data32Bit(23 downto 0);
+                                Mem(load_Addr)(7 downto 0) := Data32Bit(31 downto 24);
+                            when 2 =>
+                                --save the lowest 16Bit to the the 16 MSB of the Mem(load_addr) and the highest 16Bit of rs2 to the lowest 16 Bit of Mem(load_addr+1)
+                                Mem(load_Addr)(31 downto 16) := Data32Bit(15 downto 0);
+                                Mem(load_Addr)(15 downto 0) := Data32Bit(31 downto 17);
+                            when 3=>
+                                --save the lowest 8Bit to the the 8 MSB of the Mem(load_addr) and the highest 24Bit of rs2 to the lowest 24 Bit of Mem(load_addr+1)
+                                Mem(load_Addr)(31 downto 24) := Data32Bit(7 downto 0);
+                                Mem(load_Addr)(23 downto 0) := Data32Bit(31 downto 8);
+                            when others=>
+                                report"Error: Store-Instruction Address Calculation. Difference took on a Value that shouldnt be possible" severity error;
+                            end case;
+                                           
                         
                             
                     when others =>
