@@ -55,6 +55,7 @@ procedure filetomemory (
     variable mem_check : string(31 downto 0);  -- used for debugging
     variable immStore : bit_vector(11 downto 0);
     variable immBranch : bit_vector(12 downto 0);
+    variable immJump : bit_vector(20 downto 0);
           
     begin
     
@@ -411,13 +412,13 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                          -- Predefine 'immStore', as slicing can't be done on conversion directly --
-                            immStore := bit_vector(to_signed(int2, 20)); 
+                        immJump := bit_vector(to_signed(int2, 20));
 
                          -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                         outputToMem32Bit(31) := immBranch(20);  -- imm   
-                         outputToMem32Bit(30 downto 21) := bimmBranch(10 downto 1);  -- imm  
-                         outputToMem32Bit(20) := immBranch(11);  -- imm   
-                         outputToMem32Bit(19 downto 12) := immBranch(19 downto 12);  -- imm
+                         outputToMem32Bit(31) := immJump(20);  -- imm   
+                         outputToMem32Bit(30 downto 21) := immJump(10 downto 1);  -- imm  
+                         outputToMem32Bit(20) := immJump(11);  -- imm   
+                         outputToMem32Bit(19 downto 12) := immJump(19 downto 12);  -- imm
                          outputToMem32Bit(11 downto 7)  := bit_vector(to_unsigned(int1, 5));  -- rd
                          outputToMem32Bit(6 downto 0)   := opcode;  -- opcode
                         
