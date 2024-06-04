@@ -1,7 +1,0 @@
-Test this is in the file a s d f
-300000 22234
-NOP
-LOAD R1, #5
-ADD R2, R1, R3
-STORE R2, 0x100
-HALT
