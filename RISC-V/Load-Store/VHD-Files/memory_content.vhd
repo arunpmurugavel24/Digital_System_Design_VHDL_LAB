@@ -53,6 +53,8 @@ procedure filetomemory (
     variable opcode_string : string(7 downto 1);
     variable opcode : bit_vector(7 downto 1);
     variable mem_check : string(31 downto 0);  -- used for debugging
+    variable immStore : bit_vector(11 downto 0);
+    variable immBranch : bit_vector(12 downto 0);
           
     begin
     
@@ -161,7 +163,7 @@ procedure filetomemory (
                             -- Case 1: with shamt (RISCV Spec pg. 130)--
                             if mnemonicsOpcodeIn = "SLLI " or mnemonicsOpcodeIn = "SRLI " or mnemonicsOpcodeIn = "SRAI " then
                                 outputToMem32Bit(31 downto 25) := funct7;  -- funct7
-                                outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- shamt/imm
+                                outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- shamt
                                 outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                                 outputToMem32Bit(14 downto 12) := funct3;  -- funct3
                                 outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int3, 5));  -- rd
@@ -175,7 +177,7 @@ procedure filetomemory (
                             
                             -- Case 2: without shamt --
                             else 
-                                outputToMem32Bit(31 downto 20) := bit_vector(to_unsigned(int2, 12));  -- imm
+                                outputToMem32Bit(31 downto 20) := bit_vector(to_signed(int2, 12));  -- imm
                                 outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                                 outputToMem32Bit(14 downto 12) := funct3;  -- funct3
                                 outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int3, 5));  -- rd
@@ -215,7 +217,7 @@ procedure filetomemory (
                         end if;
                             
                         -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                        outputToMem32Bit(31 downto 20) := bit_vector(to_unsigned(int3, 12));  -- imm
+                        outputToMem32Bit(31 downto 20) := bit_vector(to_signed(int3, 12));  -- imm
                         outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                         outputToMem32Bit(14 downto 12) := funct3;  -- funct3
                         outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int2, 5));  -- rd
@@ -248,13 +250,16 @@ procedure filetomemory (
                             elsif mnemonicsOpcodeIn = "SW   " then
                                 funct3 := "010";
                             end if;
-                                
+                            
+                            -- Predefine 'immStore', as slicing can't be done on conversion directly --
+                            immStore := bit_vector(to_signed(int3, 12));
+                            
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                            outputToMem32Bit(31 downto 25) := bit_vector(to_unsigned(int3, 7));  -- imm
+                            outputToMem32Bit(31 downto 25) := immStore(11 downto 5);  -- imm
                             outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- rs2
                             outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                             outputToMem32Bit(14 downto 12) := funct3;  -- funct3
-                            outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int3, 5));  -- imm
+                            outputToMem32Bit(11 downto 7) := immStore(4 downto 0);  -- imm
                             outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
                             -- Save outputToMem32Bit in 'Mem' --
@@ -278,7 +283,7 @@ procedure filetomemory (
                     if success then
                         read(row, int3, success);
                         if success then
-                            
+                                               
                             -- Declaration of funct3 & funct7 -- (if not defined, means default value of zeros will be used)
                             if mnemonicsOpcodeIn = "BNE  " then
                                 funct3 := "001";
@@ -291,13 +296,18 @@ procedure filetomemory (
                             elsif mnemonicsOpcodeIn = "BGEU " then
                                 funct3 := "111";
                             end if;
-                                
+
+                            -- Predefine 'immStore', as slicing can't be done on conversion directly --
+                            immBranch := bit_vector(to_signed(int3, 13));
+                               
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                            outputToMem32Bit(31 downto 25) := bit_vector(to_unsigned(int3, 7));  -- imm
+                            outputToMem32Bit(31) := immBranch(12);  -- imm
+                            outputToMem32Bit(30 downto 25) := immBranch(10 downto 5);  -- imm
                             outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- rs2
                             outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                             outputToMem32Bit(14 downto 12) := funct3;  -- funct3
-                            outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int3, 5));  -- imm
+                            outputToMem32Bit(11 downto 8) := immBranch(4 downto 1);  -- imm
+                            outputToMem32Bit(7) := immBranch(11);  -- imm
                             outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
                             -- Save outputToMem32Bit in 'Mem' --
@@ -320,7 +330,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                         -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_signed(int2, 20));  -- imm
                         outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
                         outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
@@ -344,7 +354,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                         -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_signed(int2, 20));  -- imm
                         outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
                         outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                             
@@ -374,7 +384,7 @@ procedure filetomemory (
                             end if;
                                 
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                            outputToMem32Bit(31 downto 20) := bit_vector(to_unsigned(int3, 12));  -- imm
+                            outputToMem32Bit(31 downto 20) := bit_vector(to_signed(int3, 12));  -- imm
                             outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
                             outputToMem32Bit(14 downto 12) := funct3;  -- funct3
                             outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int2, 5));  -- rd
@@ -396,7 +406,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                          -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                         outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 20));  -- imm                        
+                         outputToMem32Bit(31 downto 12) := bit_vector(to_signed(int2, 20));  -- imm                        
                          outputToMem32Bit(11 downto 7)  := bit_vector(to_unsigned(int1, 5));  -- rd
                          outputToMem32Bit(6 downto 0)   := opcode;  -- opcode
                         
