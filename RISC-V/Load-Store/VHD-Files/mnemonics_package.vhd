@@ -40,6 +40,7 @@ procedure mnemonics_opcode (
     begin
         -- switch case only uses integers; so have to resort to if-else case --
         
+        report("mnemonics: " & mnemonics);
         -- R-Type --
         if mnemonics = "SLL  " or mnemonics = "XOR  " or mnemonics = "SRL  " or mnemonics = "SRA  " or mnemonics = "OR   " or mnemonics = "AND  " or mnemonics = "ADD  " or mnemonics = "SUB  " or mnemonics = "SLT  " or mnemonics = "SLTU " then
             opcode := "0110011";

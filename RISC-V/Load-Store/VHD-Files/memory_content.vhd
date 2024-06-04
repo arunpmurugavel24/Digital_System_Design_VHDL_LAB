@@ -68,6 +68,7 @@ procedure filetomemory (
             read(row, mnemonicsOpcodeIn, success);
             
             -- Check for mnemonics -- 
+--            report("mnemonicsOpcodeIn: " & mnemonicsOpcodeIn);  -- debugging
             mnemonics_opcode(mnemonicsOpcodeIn, opcode_string);  -- usage of procedure from mnemonics_package.vhd
             opcode := stringToBitVector(opcode_string);  -- usage of procedure from auxiliary_package.vhd
             
