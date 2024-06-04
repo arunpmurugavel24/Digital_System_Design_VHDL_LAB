@@ -78,86 +78,86 @@
 
 **Setup für Store-Insturction**
 - Speichert Adresse 64535*4 in Reg28<br />
-	*LUI   28 63*
+	*LUI   28 63*<br />
 	*ADDI  28 92 28*
 
 - Die nächsten 4 SB speicher alle in die selbe 32Bit-Addresse aber an unterschiedlichen Byte
 - Addr: 64535 | Inhalt: 167.837.960 (0000 1010 0000 0001 0000 0001 0000 1000)<br />
-	*SB    28 6 0* 	--Speichert 8 (0000 1000)
-	*SB    28 7 1*	--Speichert 1 (0000 0001)
-	*SB    28 8 2*	--Speichert 1 (0000 0001)
+	*SB    28 6 0* 	--Speichert 8 (0000 1000)<br />
+	*SB    28 7 1*	--Speichert 1 (0000 0001)<br />
+	*SB    28 8 2*	--Speichert 1 (0000 0001)<br />
 	*SB    28 9 3*	--Speichert 10(0000 1010)
 - Die nächsten 2 SH Instructions speicher auf die selbe 32Bit-Addresse
 - Addr: 64536 | Inhalt: 16.056.575 (0000 0000 1111 0101 0000 0000 1111 1111)<br />
-	*SH    28 10 4*	--Speichert 32(0000 0000 1111 1111)
+	*SH    28 10 4*	--Speichert 32(0000 0000 1111 1111)<br />
 	*SH    28 11 6*	--Speichert 2 (0000 0000 1111 0101)
 - Store Word Befehle. Jeder SW Speichert in eine eigene SW. _Imm_ steigt um 4, weil wir hier mit Byte Adressen arbeiten<br />
-	*SW    28 12 8*	--Speichert 32 (0010 0000) vom SLLI
-	*SW    28 13 12*	--Speichert 2  (0000 0010) vom SRLI
-	*SW    28 14 16*	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRAI 
-	*SW    28 15 20*	--Speichert 2.535.424 (Vom LUI Befehl)
-	*SW    28 16 24*	--Speichert 2.535.440 (Vom AUIPC Befehl)
-	*SW    28 17 28*	--Speichert 9 vom ADD
-	*SW    28 18 32*	--Speichert 16 (0001 0000) vom SLT
-	*SW    28 19 36*	--Speichert 16 (0001 0000) vom SLTU
-	*SW    28 20 40*	--Speichert 10 (0000 1010) vom AND
-	*SW    28 21 44*	--Speichert 255(1111 1111) vom OR
-	*SW    28 22 48*	--Speichert 245(1111 0101) vom XOR
-	*SW    28 23 52*	--Speichert 16 (0001 0000) vom SLL
-	*SW    28 24 56*	--Speichert 2  (0000 0010) vom SRL
-	*SW    28 25 60*	--Speichert 7 vom Sub
+	*SW    28 12 8*	--Speichert 32 (0010 0000) vom SLLI<br />
+	*SW    28 13 12*	--Speichert 2  (0000 0010) vom SRLI<br />
+	*SW    28 14 16*	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRAI <br />
+	*SW    28 15 20*	--Speichert 2.535.424 (Vom LUI Befehl)<br />
+	*SW    28 16 24*	--Speichert 2.535.440 (Vom AUIPC Befehl)<br />
+	*SW    28 17 28*	--Speichert 9 vom ADD<br />
+	*SW    28 18 32*	--Speichert 16 (0001 0000) vom SLT<br />
+	*SW    28 19 36*	--Speichert 16 (0001 0000) vom SLTU<br />
+	*SW    28 20 40*	--Speichert 10 (0000 1010) vom AND<br />
+	*SW    28 21 44*	--Speichert 255(1111 1111) vom OR<br />
+	*SW    28 22 48*	--Speichert 245(1111 0101) vom XOR<br />
+	*SW    28 23 52*	--Speichert 16 (0001 0000) vom SLL<br />
+	*SW    28 24 56*	--Speichert 2  (0000 0010) vom SRL<br />
+	*SW    28 25 60*	--Speichert 7 vom Sub<br />
 	*SW    28 26 64*	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRA 
 
 **Testbereich von Jump und Branch Instructions**
 - **Setup**
-	*ADDI  0 0 6*	--Setzt Rg6 auf 0
-	*ADDI  0 4 7* 	--Setzt Rg6 auf 7
-	*NOP*   		--PC auf den gesprungen wird
-	*BEQ   6 7 12*	--Vergleicht RG6 und Rg7. Wenn Equal springt 3 Instruction nach vorne
-	*ADDI  6 1 6*	--Addiert auf Rg6 1 drauf
-	*JAL   0 -12*	--Springt 3 Instructions zurück(12Adressen). Speichert nächste Adresse(PC+4) in Rg0(Hardwired 0)
-	*NOP*
-	*BNE   6 7 12*	--Jumps 3 Instructions ahead 
-	*ADDI  6 -1 6*	--subtracts 1 From Rg6 so that its no longer equal to Rg7
-	*JAL   0 -12*	--Jumps 3 Instructions back
-	*BLT   7 6 12*	--Jumps 3 Instructions if Rg7 is less than Rg6
-	*ADDI  6 1 6*
-	*JAL   0 12*
-	*BGE   6 7 12*	--Rg6 should be greater than Rg7, so next two NOP should be ignored and not appeare in trace
-	*NOP*		
+	*ADDI  0 0 6*	--Setzt Rg6 auf 0<br />
+	*ADDI  0 4 7* 	--Setzt Rg6 auf 7<br />
+	*NOP*   		--PC auf den gesprungen wird<br />
+	*BEQ   6 7 12*	--Vergleicht RG6 und Rg7. Wenn Equal springt 3 Instruction nach vorne<br />
+	*ADDI  6 1 6*	--Addiert auf Rg6 1 drauf<br />
+	*JAL   0 -12*	--Springt 3 Instructions zurück(12Adressen). Speichert nächste Adresse(PC+4) in Rg0(Hardwired 0)<br />
+	*NOP*<br />
+	*BNE   6 7 12*	--Jumps 3 Instructions ahead <br />
+	*ADDI  6 -1 6*	--subtracts 1 From Rg6 so that its no longer equal to Rg7<br />
+	*JAL   0 -12*	--Jumps 3 Instructions back<br />
+	*BLT   7 6 12*	--Jumps 3 Instructions if Rg7 is less than Rg6<br />
+	*ADDI  6 1 6*<br />
+	*JAL   0 12*<br />
+	*BGE   6 7 12*	--Rg6 should be greater than Rg7, so next two NOP should be ignored and not appeare in trace<br />
+	*NOP*<br />		
 	*NOP*
 
 - **Same Test as before but with unsigned number**
-	*ADDI  0 0 6*	--Setzt Rg6 auf 0
-	*ADDI  0 4 7* 	--Setzt Rg6 auf 7
-	*NOP*   		--PC auf den gesprungen wird
-	*BLTU  7 6 12*	--Jumps 3 Instructions if Rg7 is less than Rg6
-	*ADDI  6 1 6*
-	*JAL   0 12*
-	*BGEU  6 7 12*	--Rg6 should be greater than Rg7, so next two _NOP_ should be ignored and not appear in trace
-	*NOP*   		
+	*ADDI  0 0 6*	--Setzt Rg6 auf 0<br />
+	*ADDI  0 4 7* 	--Setzt Rg6 auf 7<br />
+	*NOP*   		--PC auf den gesprungen wird<br />
+	*BLTU  7 6 12*	--Jumps 3 Instructions if Rg7 is less than Rg6<br />
+	*ADDI  6 1 6*<br />
+	*JAL   0 12*<br />
+	*BGEU  6 7 12*	--Rg6 should be greater than Rg7, so next two _NOP_ should be ignored and not appear in trace<br />
+	*NOP*<br />   		
 	*NOP*
 
 - **Load Instruction Test**
 - Adress: 64551*4 or Rg28 + 64 has a -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
-*LBU   28 8 64* 	--LBU niedrigster Byte von der obrigen Zahl 93(0101 1101) in Rg8 
-*SW    28 8 68* 	--Speichert Rg8(93) in 64552*4
-*LBU   28 8 67* 	--LBU 2 Höchster Byte von der obrigen Zahl 255(1111 1111) in Rg8 
+*LBU   28 8 64* 	--LBU niedrigster Byte von der obrigen Zahl 93(0101 1101) in Rg8 <br />
+*SW    28 8 68* 	--Speichert Rg8(93) in 64552*4<br />
+*LBU   28 8 67* 	--LBU 2 Höchster Byte von der obrigen Zahl 255(1111 1111) in Rg8 <br />
 *SW    28 8 72* 	--Speichert Rg8(255) in 64553*4
-- LB ohne unsigned testen
-*LB    28 8 67* 	--LBU Höchster Byte von der obrigen Zahl -1(1111 1111) in Rg8 
+- LB ohne unsigned testen<br />
+*LB    28 8 67* 	--LBU Höchster Byte von der obrigen Zahl -1(1111 1111) in Rg8 <br />
 *SW    28 8 76* 	--Speichert Rg8(-1) in 64554*4
-- LH 
-*LH    28 8 66*	--LH die zwei höchsten byte -242(1111 1111 0000 1110)
-*SW    28 8 80* 	--Speichert Rg8(-242) in 64555*4
-*LHU   28 8 66* 	--LHU die zwei höchsten Byte 65.294(1111 1111 0000 1110)
+- LH <br />
+*LH    28 8 66*	--LH die zwei höchsten byte -242(1111 1111 0000 1110)<br />
+*SW    28 8 80* 	--Speichert Rg8(-242) in 64555*4<br />
+*LHU   28 8 66* 	--LHU die zwei höchsten Byte 65.294(1111 1111 0000 1110)<br />
 *SW    28 8 84*	--Speichert Rg8(65.294) in 64556*4
-- LW
-*LW    28 8 66*   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)
+- LW<br />
+*LW    28 8 66*   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
 *SW    28 8 88*	--Speichert  Rg8(-15.859.107) in 64557*4
 
 - **Test SB bei vollem Register Rg8**
-*SB    28 8 92*   --Sollte unterste Byte 93(0101 1101) in 64558*4 speichern
+*SB    28 8 92*   --Sollte unterste Byte 93(0101 1101) in 64558*4 speichern<br />
 *stop* --Signalisiert Ende der Input datei und stop simulation mit wait
 
 
