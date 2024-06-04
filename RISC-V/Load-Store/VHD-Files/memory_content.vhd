@@ -61,6 +61,9 @@ procedure filetomemory (
         -- Read is a 2-step-process; first extract the entire line via "readline", then read part by part via "read"
 --        while not endfile(inputFile) loop  -- loop through the entire .txt file
         while stop_detected loop
+            funct3 := "000";
+            funct7 := "0000000";
+            outputToMem32Bit := "00000000000000000000000000000000";
             readline (inputFile, row);
             success := TRUE;
             
@@ -162,6 +165,7 @@ procedure filetomemory (
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
                             -- 2 different cases --
                             -- Case 1: with shamt (RISCV Spec pg. 130)--
+                            report ("mnemonicsOpcodeIn: " & mnemonicsOpcodeIn);  -- debugging
                             if mnemonicsOpcodeIn = "SLLI " or mnemonicsOpcodeIn = "SRLI " or mnemonicsOpcodeIn = "SRAI " then
                                 outputToMem32Bit(31 downto 25) := funct7;  -- funct7
                                 outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- shamt
