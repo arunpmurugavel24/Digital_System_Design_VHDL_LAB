@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: Hian Zing Voon
+-- Engineer: Hian Zing Voon, Yu-Hung Tsai
 -- 
 -- Create Date: 24.05.2024 11:00:29
 -- Design Name: 
@@ -386,8 +386,8 @@ procedure filetomemory (
                             -- Declaration of funct3 & funct7 -- (if not defined, means default value of zeros will be used)
                             if mnemonicsOpcodeIn = "JALR " then
                                 funct3 := "000";
-                            end if;
-                                
+                            end if;  
+
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
                             outputToMem32Bit(31 downto 20) := bit_vector(to_signed(int3, 12));  -- imm
                             outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
@@ -410,8 +410,14 @@ procedure filetomemory (
                 if success then
                     read(row, int2, success);
                     if success then
+                         -- Predefine 'immStore', as slicing can't be done on conversion directly --
+                            immStore := bit_vector(to_signed(int2, 20)); 
+
                          -- Writing values into outputToMem32Bit to store it in 'Mem' --
-                         outputToMem32Bit(31 downto 12) := bit_vector(to_signed(int2, 20));  -- imm                        
+                         outputToMem32Bit(31) := immBranch(20);  -- imm   
+                         outputToMem32Bit(30 downto 21) := bimmBranch(10 downto 1);  -- imm  
+                         outputToMem32Bit(20) := immBranch(11);  -- imm   
+                         outputToMem32Bit(19 downto 12) := immBranch(19 downto 12);  -- imm
                          outputToMem32Bit(11 downto 7)  := bit_vector(to_unsigned(int1, 5));  -- rd
                          outputToMem32Bit(6 downto 0)   := opcode;  -- opcode
                         
