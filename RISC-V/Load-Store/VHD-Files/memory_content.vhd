@@ -423,6 +423,11 @@ procedure filetomemory (
                 
                 -- To stop the program --           
                 when code_stop =>
+                    outputToMem32Bit(6 downto 0) := opcode;
+                    
+                    -- Save outputToMem32Bit in 'Mem' --
+                    Mem(PC) := outputToMem32Bit;
+                    
                     stop_detected := false;
                 
                 when others =>
