@@ -1,4 +1,5 @@
-LUI  619 5
+LUI  3 5 12
+SLL  11 12 13
 AUIPC1 abc 3
 ADDI 5 1900 5
 SLTIU 2 322 4
@@ -12,7 +13,7 @@ Addi 30 3096 30
 BEQ  7 8 4
 addi 0 1 9
 SW   30 9 0
-stop
+stop 
 Addi 0 2 9
 SW   30 9 0
-stop
+stop 
