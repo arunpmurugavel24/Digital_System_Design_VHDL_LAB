@@ -81,14 +81,14 @@
 	*LUI   28 63*<br />
 	*ADDI  28 92 28*
 
-- Die nächsten 4 SB speicher alle in die selbe 32Bit-Addresse aber an unterschiedlichen Byte
-- Addr: 64535 | Inhalt: 167.837.960 (0000 1010 0000 0001 0000 0001 0000 1000)<br />
+- Die nächsten 4 SB speicher alle in die selbe 32Bit-Addresse aber an unterschiedlichen Byte<br />
+  Addr: 64535 | Inhalt: 167.837.960 (0000 1010 0000 0001 0000 0001 0000 1000)<br />
 	*SB    28 6 0* 	--Speichert 8 (0000 1000)<br />
 	*SB    28 7 1*	--Speichert 1 (0000 0001)<br />
 	*SB    28 8 2*	--Speichert 1 (0000 0001)<br />
 	*SB    28 9 3*	--Speichert 10(0000 1010)
-- Die nächsten 2 SH Instructions speicher auf die selbe 32Bit-Addresse
-- Addr: 64536 | Inhalt: 16.056.575 (0000 0000 1111 0101 0000 0000 1111 1111)<br />
+- Die nächsten 2 SH Instructions speicher auf die selbe 32Bit-Addresse<br />
+  Addr: 64536 | Inhalt: 16.056.575 (0000 0000 1111 0101 0000 0000 1111 1111)<br />
 	*SH    28 10 4*	--Speichert 32(0000 0000 1111 1111)<br />
 	*SH    28 11 6*	--Speichert 2 (0000 0000 1111 0101)
 - Store Word Befehle. Jeder SW Speichert in eine eigene SW. _Imm_ steigt um 4, weil wir hier mit Byte Adressen arbeiten<br />
