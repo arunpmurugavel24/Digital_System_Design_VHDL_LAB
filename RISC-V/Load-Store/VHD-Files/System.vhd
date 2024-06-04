@@ -71,14 +71,19 @@ BEGIN
         variable imm : integer RANGE 4095 downto 0;
         variable rs : integer RANGE 31 downto 0;
         variable func3: integer RANGE 7 downto 0;
+	variable func7 : integer RANGE 7 downto 0;
         variable rd : Integer Range 31 downto 0;
+	variable shamt : integer Range 31 downto 0; -- Shift Amount Bits
         variable addr: integer Range 2**16-1 downto 0; --the adress given in the Instruction (8Bit-Steps)
-        variable load_addr : integer RANGE 2**16-1 downto 0; --the calculated adress for the 32Bit Memory cell 
+        variable load_addr : integer RANGE 2**16-1 downto 0; --the calculated adress for the 32Bit Memory cell
+	variable DataIntTmp : integer RANGE 2**16-1 downto 0; -- Temporary Integer Variable
         variable Data : bit_vector(31 downto 0); --the whole bit_vector from Memory
         variable Data1 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data2 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data3 : Bit_vector(7 downto 0); --one Address is only 8Bit big
         variable Data4 : Bit_vector(7 downto 0); --one Address is only 8Bit big
+	variable Data32Tmp : Bit_Vector(31 downto 0); -- Temporary 32 Bit Variable
+        variable Data32Tmp2 : Bit_Vector(31 downto 0); --Temporary 32 Bit Variable
         variable Data32Bit : Bit_vector(31 downto 0); --the final frankenstein Bitvector
         
         --For S-type instruction
@@ -477,17 +482,186 @@ BEGIN
                 end case;
                 
 ---------------------            
---MADE BY             
+--MADE BY ARUN PREMA MURUGAVEL     
 ---------------------                                                    
             when code_arithmetic =>
                 --Arithmetic OP (add, sub, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND)
-                
+                --Arithmetic Decoding
+                --R Format
+                func3 := TO_INTEGER(unsigned(Inst(14 downto 12)));  --get other Parameter
+                rs1 := TO_INTEGER(unsigned(Inst(19 downto 15)));    --Source Register 1
+                rs2 := TO_INTEGER(unsigned(Inst(24 downto 20)));    --Source Register 2
+                rd := TO_INTEGER(unsigned(Inst(11 downto 7)));      --Destination Register
+                func7 := TO_INTEGER(unsigned(Inst(31 downto 25)));
+                --func3+func7 combined with Opcode, specify what operation to perform
+                case func3 is
+                    when 0 => 
+                        case func7 is
+                            when 0 => --ADD
+                                trace(l, Outputfile, PC, string'("ADD"), imm, rs1, rs2,  rd);
+                                Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + TO_INTEGER(signed(Reg(rs2)))), 32));
+                            when 32 => --SUB
+                                trace(l, Outputfile, PC, string'("SUB"), imm, rs1, rs2,  rd);
+                                Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) - TO_INTEGER(signed(Reg(rs2)))), 32));
+                        end case;
+                    when 1 => --SLL
+                        trace(l, Outputfile, PC, string'("SLL"), imm, rs1, rs2,  rd);
+                        Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                        Data32Tmp := Reg(rs1);
+                        Data32Tmp2 := Reg(rs2);
+                        for i in 4 downto 0 Loop
+                            rs2_low(i) := Data32Tmp2(i);
+                        end Loop;
+                        DataIntTmp := TO_INTEGER(unsigned(rs2_low));
+                        for i in 0 downto (31 - DataIntTmp) Loop
+                            Data32Bit(i + DataIntTmp) := Data32Tmp(i);
+                        end Loop;
+                        Reg(rd) := Data32Bit;
+                    when 2 => -- SLT
+                        trace(l, Outputfile, PC, string'("SLT"), imm, rs1, rs2,  rd);
+                        if (to_integer(signed(Reg(rs1))) < to_integer(signed(Reg(rs2)))) then
+                            Data32Bit(0) := '1';
+                        end if;
+                        if (to_integer(signed(Reg(rs1))) >= to_integer(signed(Reg(rs2)))) then
+                            Data32Bit(0) := '0';
+                        end if;
+                        Reg(rd) := Data32Bit;
+                    when 3 => -- SLTU
+                        trace(l, Outputfile, PC, string'("SLTU"), imm, rs1, rs2,  rd);
+                        if (to_integer(unsigned(Reg(rs1))) < to_integer(unsigned(Reg(rs2)))) then
+                            Data32Bit(0) := '1';
+                        end if;
+                        if (to_integer(unsigned(Reg(rs1))) >= to_integer(signed(Reg(rs2)))) then
+                            Data32Bit(0) := '0';
+                        end if;
+                        Reg(rd) := Data32Bit;
+                    when 4 => --XOR
+                        trace(l, Outputfile, PC, string'("XOR"), imm, rs1, rs2,  rd);
+                        Reg(rd) := Reg(rs1) xor Reg(rs2);
+                    when 5 =>
+                        case func7 is
+                            when 32 => --SRA
+                                trace(l, Outputfile, PC, string'("SRA"), imm, rs1, rs2,  rd);
+                                Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                                Data32Tmp := Reg(rs1);
+                                Data32Tmp2 := Reg(rs2);
+                                for i in 4 downto 0 Loop
+                                    rs2_low(i) := Data32Tmp2(i);
+                                end Loop;
+                                DataIntTmp := TO_INTEGER(unsigned(rs2_low));
+                                for i in 31 downto DataIntTmp Loop
+                                    Data32Bit(i - DataIntTmp) := Data32Tmp(i);
+                                end Loop;
+                                for j in 31 downto (31 - DataIntTmp) Loop
+                                    Data32Bit(j) := Data32Bit(31-DataIntTmp);
+                                end Loop;
+                                Reg(rd) := Data32Bit;
+                            when 0 => --SRL
+                                trace(l, Outputfile, PC, string'("SRL"), imm, rs1, rs2,  rd);
+                                Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                                Data32Tmp := Reg(rs1);
+                                Data32Tmp2 := Reg(rs2);
+                                for i in 4 downto 0 Loop
+                                    rs2_low(i) := Data32Tmp2(i);
+                                end Loop;
+                                DataIntTmp := TO_INTEGER(unsigned(rs2_low));
+                                for i in 31 to DataIntTmp Loop
+                                    Data32Bit(i - DataIntTmp) := Data32Tmp(i);
+                                end Loop;
+                                Reg(rd) := Data32Bit;
+                        end case;
+                        when 6 => --OR
+                            trace(l, Outputfile, PC, string'("OR"), imm, rs1, rs2,  rd);
+                            Reg(rd) := Reg(rs1) or Reg(rs2);
+                        when 7 => --AND
+                            trace(l, Outputfile, PC, string'("AND"), imm, rs1, rs2,  rd);
+                            Reg(rd) := Reg(rs1) and Reg(rs2);    
+                        when others =>
+                            report "something is wrong with the Arithmetic Funcitons";
+                end case;
 ---------------------
---MADE BY
+--MADE BY ARUN PREMA MURUGAVEL
 ---------------------                                
             when code_arithmeticImm_nop =>
                 --Arithmetic OP (ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI) and NOP (ADDI with x0 x0 0)
-
+                --Arithmetic Decoding
+                --I Format
+                func3 := TO_INTEGER(unsigned(Inst(14 downto 12)));  --get other Parameter
+                rs1 := TO_INTEGER(unsigned(Inst(19 downto 15)));    --Source Register 1
+                rd := TO_INTEGER(unsigned(Inst(11 downto 7)));      --Destination Register
+                imm := TO_INTEGER(signed(Inst(31 downto 20)));      -- Immediate Amount
+                shamt := TO_INTEGER(unsigned(Inst(24 downto 20)));  -- Shift Amount
+                func7 := TO_INTEGER(unsigned(Inst(31 downto 25)));  -- func7
+                case func3 is
+                        when 0 =>
+                            if (imm /= 0) then --ADDI
+                                trace(l, Outputfile, PC, string'("ADDI"), imm, rs1, rs2,  rd);
+                                Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + imm), 32));
+                            else --NOP
+                                trace(l, Outputfile, PC, string'("NOP"), imm, rs1, rs2,  rd);
+                                Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + 0), 32));
+                            end if;
+                    when 1 => --SLLI
+                        trace(l, Outputfile, PC, string'("SLLI"), imm, rs1, rs2,  rd);
+                        Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                        Data32Tmp := Reg(rs1);
+                        for i in 0 downto (31 - shamt) Loop
+                            Data32Bit(i + shamt) := Data32Tmp(i);
+                        end Loop;
+                        Reg(rd) := Data32Bit;
+                    when 2 => --SLTI
+                        trace(l, Outputfile, PC, string'("SLTI"), imm, rs1, rs2,  rd);
+                        if (to_integer(signed(Reg(rs1))) < to_integer(to_signed(imm, 32))) then
+                            Data32Bit(0) := '1';
+                        end if;
+                        if (to_integer(signed(Reg(rs1))) >= to_integer(to_signed(imm, 32))) then
+                            Data32Bit(0) := '0';
+                        end if;
+                        Reg(rd) := Data32Bit;
+                    when 3 => --SLTUI
+                        trace(l, Outputfile, PC, string'("SLTUI"), imm, rs1, rs2,  rd);
+                        if to_integer(unsigned(Reg(rs1))) < to_integer(to_unsigned(imm, 32)) then
+                            Data32Bit(0) := '1';
+                        end if;
+                        if (to_integer(unsigned(Reg(rs1))) >= to_integer(to_unsigned(imm, 32))) then
+                            Data32Bit(0) := '0';
+                        end if;
+                        Reg(rd) := Data32Bit;
+                    when 4 => --XORI
+                        trace(l, Outputfile, PC, string'("XORI"), imm, rs1, rs2,  rd);
+                        Reg(rd) := Reg(rs1) xor bit_vector(to_signed(imm, 32));
+                    when 5 =>
+                        case func7 is
+                            when 0 =>
+                                when 32 => --SRA
+                                trace(l, Outputfile, PC, string'("SRA"), imm, rs1, rs2,  rd);
+                                Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                                Data32Tmp := Reg(rs1);
+                                for i in 31 downto shamt Loop
+                                    Data32Bit(i - shamt) := Data32Tmp(i);
+                                end Loop;
+                                for j in 31 downto (31 - shamt) Loop
+                                    Data32Bit(j) := Data32Bit(31-shamt);
+                                end Loop;
+                                Reg(rd) := Data32Bit;
+                            when 0 => --SRL
+                                trace(l, Outputfile, PC, string'("SRL"), imm, rs1, rs2,  rd);
+                                Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
+                                Data32Tmp := Reg(rs1);
+                                for i in 31 to shamt Loop
+                                    Data32Bit(i - shamt) := Data32Tmp(i);
+                                end Loop;
+                                Reg(rd) := Data32Bit;
+                        end case;
+                    when 6 => --ORI
+                        trace(l, Outputfile, PC, string'("ORI"), imm, rs1, rs2,  rd);
+                        Reg(rd) := Reg(rs1) or bit_vector(to_signed(imm, 32));
+                    when 7 => --ANDI
+                        trace(l, Outputfile, PC, string'("ANDI"), imm, rs1, rs2,  rd);
+                        Reg(rd) := Reg(rs1) and bit_vector(to_signed(imm, 32));
+                    when others =>
+                        report "something is wrong with the Arithmetic Immediate Functions";
+                end case;
 ---------------------            
 --MADE BY TIEMO SCHMITD            
 ---------------------             
