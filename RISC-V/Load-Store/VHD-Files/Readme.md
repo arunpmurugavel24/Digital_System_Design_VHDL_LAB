@@ -26,7 +26,7 @@
 	*SLTIU 6 -9 8*
 
 **Setup für weiter Instruction Tests**
-- Speicher 47 (0010 1111) in Reg30
+- Speicher 47 (0010 1111) in Reg30 <br />
 	*ADDI  0 47 30*
 - Test ADDI. Speicher 218 (1101 0101) in Reg31
 	*ADDI  0 218 31*
