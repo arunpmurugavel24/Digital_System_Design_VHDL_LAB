@@ -127,7 +127,7 @@
 	*NOP*<br />		
 	*NOP*
 
-- **Same Test as before but with unsigned number**
+**Same Test as before but with unsigned number**
 	*ADDI  0 0 6*	--Setzt Rg6 auf 0<br />
 	*ADDI  0 4 7* 	--Setzt Rg6 auf 7<br />
 	*NOP*   		--PC auf den gesprungen wird<br />
