@@ -50,6 +50,7 @@ package body conversion_pack is -- Content of function
                 bitVector(i) := '1';
             else
                 report("Error in stringToBitVector: " & str);  -- Report error in Tcl console, if any.
+                exit;
             end if;
         end loop;
         return bitVector;  -- return is a must! Else Vivado will be running in a never ending loop.

@@ -57,9 +57,9 @@ procedure trace( l : inout line;
                 begin
                     write(l, integer'image(PC), left, 3);
                     write(l, string'(" | "));
-                    write(l, OP_code, left, 4); --we are calling trace in the different switch cases, so opcode doesnt need to be flexible
+                    write(l, OP_code, left, 5); --we are calling trace in the different switch cases, so opcode doesnt need to be flexible
                     write(l, string'(" | "));
-                    write(l, integer'image(Imm), left, 4);
+                    write(l, integer'image(Imm), left, 8);
                     write(l, string'(" | "));                    
                     write(l, integer'image(r1),left, 3);
                     write(l, string'(" | "));
@@ -73,15 +73,15 @@ procedure trace_header(
                 l : inout line;
                 f : inout text) is 
                 begin
-                    write(l, string'("PC"), left, 3);
+                    write(l, string'("PC"), left, 4);
                     write(l, string'("|"));
-                    write(l, string'("OP"), left, 4); --we are calling trace in the different switch cases, so opcode doesnt need to be flexible
+                    write(l, string'("OP"), left, 7); --we are calling trace in the different switch cases, so opcode doesnt need to be flexible
                     write(l, string'("|"));
-                    write(l, string'("IMM"), left, 4);
+                    write(l, string'("IMM"), left, 10);
                     write(l, string'("|"));                    
-                    write(l, string'("rs1"),left, 3);
+                    write(l, string'("rs1"),left, 5);
                     write(l, string'("|"));
-                    write(l, string'("rs2"),left, 3);
+                    write(l, string'("rs2"),left, 5);
                     write(l, string'("|"));
                     write(l, string'("rd"), left, 3);
                     writeline(f, l);
@@ -118,7 +118,8 @@ procedure mem_dump(
                         write(l, string'("|"));
                         write(l, integer'image(to_integer(signed(mem(i)))), left, 11);
                         writeline(f, l);
-                    end LOOP;    
+                    end LOOP;
+  
                 end mem_dump;
                 
 end package body;

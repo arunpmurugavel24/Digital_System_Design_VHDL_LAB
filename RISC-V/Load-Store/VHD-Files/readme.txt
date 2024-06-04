@@ -1,6 +1,10 @@
 Zusammenfassung, Besonderheiten und Erklärungen zu unseren Risc_V Prozessor umsetzung.
 	Projekt von Hian zing Voon, Arun Murugavel, Yu-Hung TSAI und Tiemo Schmidt
 
+
+-------------
+Made by Tiemo Schmidt, Hian zing Voon, Arun Murugavel, Yu-Hung TSAI
+-------------
 Memory: Wir haben die Memory als ein Array aus 65535 Zellen mit dem Datentyp bit_vector(31 downto 0) umgesetzt.
 	Das führt leider zu Besondernheiten für die Load und Store Befehle. Da die Load und Store Befehle mit Byte großen Zellen arbeiten
 	haben wir uns darauf festgelegt für den Nutzer es als ein Array mit 262.140 Zellen und bit_vector(7 downto 0) darzustellen.
@@ -14,7 +18,7 @@ Memory-Dump: Zu finden in Trace.txt. Weil 65.535 einzelne Zellen ausgeben und ü
 Trace: 	Zu finden in Trace.txt. Der Trace gibt den momentanen PC, OP-Code, Immidiet, Source-Register 1, Source-Register 2 und
 	Destination-Register aus. Sollte für die jeweiligen Instruction einer dieser Attribute nicht gebraucht werden gibt er 0 aus.
 	Es gibt nicht den Register Inhalt aus, was das überprüfen des richtigen Ausführen der Instruction nur über die Memory-Dump 
-	möglich macht.
+	möglich macht. (wäre umsetzbar mit der auxilary function bitvectorTOstring())
 
 Input-File: Wir haben uns auf einen simplen Assembler Code festgelegt. Die Opcodes müssen in Großbuchstaben geschrieben werden. 
 	Wegen Besonderheiten beim lesen von Strings mit der Bibliothek std.textio haben wir festgelegt das der Op-Code immer 5 Zeichen lang sein muss. 
@@ -29,8 +33,13 @@ Auxiliary-Package: Das ist ein Paket, das hilft, um 'string' zu 'bit_vector' umz
 
 Mnemonics-Package: Das ist ein Paket, um Opcodes wie "ADD" oder "XOR" in 'bit_vector' umzuwandeln, damit es bei der Dekodierung verwendet werden kann. 
 
+System.vhd: Hier wird der Prozessor simuliert. Die Instruction werden aus der Mem geholt und ausgeführt.
 
 
+
+-------------
+Made by Tiemo Schmidt
+-------------
 Inputfile-Testbench mit Kommentaren:
 -----------------------------------------
 --Addi Test. 0+8 wird in reg6 abgespeichert

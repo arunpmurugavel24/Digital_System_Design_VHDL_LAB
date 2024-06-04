@@ -447,9 +447,7 @@ BEGIN
                         --takes lowest 8 Bit of Rs2 and stores it at rs1+imm
                         Data32Bit := Reg(rs2);
                         --get the lower 8
-                        report("   LB whole rs2 Reg: " & bitVectortoString(Data32Bit)); 
                         Data1 := Data32Bit(7 downto 0);
-                        report("   LB whole Dat1 Reg: " & bitVectortoString(Data1)); 
                         --calculate Hardware address save it to only the given bit
                         addr := to_integer(signed(Reg(rs1)))+imm;
                         load_addr := addr/4;
@@ -457,7 +455,6 @@ BEGIN
                         
                         --Save the 8Bit to the correct place in Mem at load_addr
                         Mem(load_addr)(8*(difference+1)-1 downto 8*(difference+1)-8) := Data1;
-                        report("   LB whole Dat1 Reg: " & bitVectortoString(Mem(load_addr))); 
 
                     when 1 =>
                         --store Halfword
@@ -547,7 +544,7 @@ BEGIN
                                 trace(l, Outputfile, PC, string'("SUB"), imm, rs1, rs2,  rd);
                                 Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) - TO_INTEGER(signed(Reg(rs2)))), 32));
                             when others =>
-                                report("Error!");
+                                report("Error at ADD/SUB func7");
                         end case;
                     when 1 => --SLL
                         trace(l, Outputfile, PC, string'("SLL"), imm, rs1, rs2,  rd);
@@ -615,7 +612,7 @@ BEGIN
                                 end Loop;
                                 Reg(rd) := Data32Bit;
                             when others =>
-                                report("Error!");
+                                report("Error at SRA/SRL func7");
                         end case;
                         when 6 => --OR
                             trace(l, Outputfile, PC, string'("OR"), imm, rs1, rs2,  rd);
@@ -639,7 +636,6 @@ BEGIN
                 imm := TO_INTEGER(signed(Inst(31 downto 20)));      -- Immediate Amount
                 shamt := TO_INTEGER(unsigned(Inst(24 downto 20)));  -- Shift Amount
                 func7 := TO_INTEGER(unsigned(Inst(31 downto 25)));  -- func7
-                report"!!!!!!!!!!!!!!!!!!!----------ARUN Arithmetic, PC: "& integer'image(PC) &" func3: " & integer'image(func3) & "   func7: " & integer'image(func7) & "   imm: " & integer'image(imm);
                 case func3 is
                         when 0 =>
                             if (imm /= 0) then --ADDI
@@ -700,7 +696,7 @@ BEGIN
                                 end Loop;
                                 Reg(rd) := Data32Bit;
                             when others =>
-                                report("Error!");
+                                report("Error at SRAI/SRLI func7");
                         end case;
                     when 6 => --ORI
                         trace(l, Outputfile, PC, string'("ORI"), imm, rs1, rs2,  rd);
@@ -858,7 +854,6 @@ BEGIN
 ---------------------  
             when code_lui =>  -- LUI is used with ADDI to load a 32-bit constant (RISCV pdf pg. 8)
                 --LUI := Load upper immediate. It places imm in the top 20 bits, then fills lower 12 bits with 0
-				report("immLUI Befehl");
 				imm32Bit (31 downto 12) := Inst(31 downto 12);				
 				rd := TO_INTEGER(unsigned(Inst(11 downto 7)));
 				

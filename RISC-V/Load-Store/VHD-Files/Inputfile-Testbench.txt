@@ -88,4 +88,4 @@ SW    28 8 84
 LW    28 8 66
 SW    28 8 88
 SB    28 8 92
-STOP
+STOP    

@@ -72,8 +72,9 @@ procedure filetomemory (
             read(row, mnemonicsOpcodeIn, success);
             
             -- Check for mnemonics -- 
---            report("mnemonicsOpcodeIn: " & mnemonicsOpcodeIn);  -- debugging
+            --report("PC: " & integer'image(PC) & "   mnemonicsOpcodeIn: " & mnemonicsOpcodeIn);  -- debugging
             mnemonics_opcode(mnemonicsOpcodeIn, opcode_string);  -- usage of procedure from mnemonics_package.vhd
+            report("PC: " & integer'image(PC) & "   mnemonicsOpcodeIn: " & mnemonicsOpcodeIn & "   OP-Code: " & Opcode_string);  -- debugging
             opcode := stringToBitVector(opcode_string);  -- usage of procedure from auxiliary_package.vhd
             
             -- Start of switch case -- 
@@ -166,7 +167,7 @@ procedure filetomemory (
                             -- Writing values into outputToMem32Bit to store it in 'Mem' --
                             -- 2 different cases --
                             -- Case 1: with shamt (RISCV Spec pg. 130)--
-                            report ("mnemonicsOpcodeIn: " & mnemonicsOpcodeIn);  -- debugging
+                            --report ("PC: " & integer'image(PC) & "   mnemonicsOpcodeIn: " & mnemonicsOpcodeIn );  -- debugging
                             if mnemonicsOpcodeIn = "SLLI " or mnemonicsOpcodeIn = "SRLI " or mnemonicsOpcodeIn = "SRAI " then
                                 outputToMem32Bit(31 downto 25) := funct7;  -- funct7
                                 outputToMem32Bit(24 downto 20) := bit_vector(to_unsigned(int2, 5));  -- shamt
@@ -412,7 +413,7 @@ procedure filetomemory (
                     read(row, int2, success);
                     if success then
                          -- Predefine 'immStore', as slicing can't be done on conversion directly --
-                        immJump := bit_vector(to_signed(int2, 20));
+                        immJump := bit_vector(to_signed(int2, 21));
 
                          -- Writing values into outputToMem32Bit to store it in 'Mem' --
                          outputToMem32Bit(31) := immJump(20);  -- imm   
