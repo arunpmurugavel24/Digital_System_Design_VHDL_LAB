@@ -28,70 +28,70 @@
 **Setup für weiter Instruction Tests**
 - Speicher 47 (0010 1111) in Reg30 <br />
 	*ADDI  0 47 30*
-- Test ADDI. Speicher 218 (1101 0101) in Reg31
+- Test ADDI. Speicher 218 (1101 0101) in Reg31<br />
 	*ADDI  0 218 31*
-- Test ANDI. 0010 1111 AND 1101 0101 = 0000 0101 (10)
+- Test ANDI. 0010 1111 AND 1101 0101 = 0000 0101 (10)<br />
 	*ANDI  30 218 9*
-- Test ORI. 0010 1111 OR 1101 0101 = 1111 1111 (255)
+- Test ORI. 0010 1111 OR 1101 0101 = 1111 1111 (255)<br />
 	*ORI  30 218 10*
-- Test XORI. 0010 1111 OR 1101 0101 = 1111 1010 (250)
+- Test XORI. 0010 1111 OR 1101 0101 = 1111 1010 (250)<br />
 	*XORI  30 218 11*
-- Test ADDI. Speicher 2 in Reg9 (0010)
+- Test ADDI. Speicher 2 in Reg9 (0010)<br />
 	*ADDI  0 2 29*
-- Test SLLI. Leftshift Reg29 5 mal und Speichert in Reg12. 0001 0000 (16)
+- Test SLLI. Leftshift Reg29 5 mal und speichert in Reg12. 0001 0000 (16)<br />
 	*SLLI  29 5 12*
-- Test SRLI. Rightshift Reg12 (enthält 16) 4 mal. 0100 (4) 
+- Test SRLI. Rightshift Reg12 (enthält 16) 4 mal. 0100 (4)<br />
 	*SRLI  12 4 13*
 
 **Setup für weitere Test**
-- Lädt mit LUI und ADDI -253.745.698 in Reg7
+- Lädt mit LUI und ADDI -253.745.698 in Reg7<br />
 	*LUI  27 -61950*
 	*ADDI  27 1502 27*
-- Test SRAI. Arithmetic Rightshift Reg27 4 mal. -15.859.107
+- Test SRAI. Arithmetic Rightshift Reg27 4 mal. -15.859.107<br />
 	*SRAI  27 4 14*
-- Testet LUI. Lädt 2.535.424 in Reg15
+- Testet LUI. Lädt 2.535.424 in Reg15<br />
 	*LUI  15 619*
-- Test AUIPC. Lädt 2.535.424 + 16 (momentaner PC) = 2.535.440
+- Test AUIPC. Lädt 2.535.424 + 16 (momentaner PC) = 2.535.440<br />
 	*AUIPC 16 619*
-- Test Add. Reg6(8) + Reg7(1) = 9 in Reg17
+- Test Add. Reg6(8) + Reg7(1) = 9 in Reg17<br />
 	*ADD  6 7 17*
-- Test SLT. Reg6(8) SLT Reg7(1) = Reg18(16)
+- Test SLT. Reg6(8) SLT Reg7(1) = Reg18(16)<br />
 	*SLT  6 7 18*
-- Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(16)
+- Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(16)<br />
 	*LTU  6 7 19*
-- Test And. R30(0010 1111) AND R31(1101 1010) = R20(0000 1010)
+- Test And. R30(0010 1111) AND R31(1101 1010) = R20(0000 1010)<br />
 	*AND  30 31 20*
-- Test And. R30(0010 1111) OR R31(1101 1010) = R20(1111 0101)
+- Test And. R30(0010 1111) OR R31(1101 1010) = R20(1111 0101)<br />
 	*OR  30 31 21*
-- Test And. R30(0010 1111) XOR R31(1101 1010) = R20(1111 1111)
+- Test And. R30(0010 1111) XOR R31(1101 1010) = R20(1111 1111)<br />
 	*XOR  30 31 22*
---Set Up für Shift Test
+- Set Up für Shift Test<br />
 	*ADDI  0 4 28*
-- Test SLL Reg29(2) SLL Reg28(4) mal = Reg23(32)
+- Test SLL Reg29(2) SLL Reg28(4) mal = Reg23(32)<br />
 	*SLL  29 28 23*
-- Test SLL Reg12(16) SLL Reg28(4) mal = Reg23(1)
+- Test SLL Reg12(16) SLL Reg28(4) mal = Reg23(1)<br />
 	*SRL  12 28 24*
-- Test sub. Reg6(8) - Reg7(1) = Reg25(7) 
+- Test sub. Reg6(8) - Reg7(1) = Reg25(7)<br />
 	*SUB  6 7 25*
-- Test SRA Reg27(-253.745.698) SRA Reg28(4) = Reg26(-15.859.107)
+- Test SRA Reg27(-253.745.698) SRA Reg28(4) = Reg26(-15.859.107)<br />
 	*SRA  27 28 26*
 
 **Setup für Store-Insturction**
-- Speichert Adresse 64535*4 in Reg28
+- Speichert Adresse 64535*4 in Reg28<br />
 	*LUI   28 63*
 	*ADDI  28 92 28*
 
 - Die nächsten 4 SB speicher alle in die selbe 32Bit-Addresse aber an unterschiedlichen Byte
-- Addr: 64535 | Inhalt: 167.837.960 (0000 1010 0000 0001 0000 0001 0000 1000) 
+- Addr: 64535 | Inhalt: 167.837.960 (0000 1010 0000 0001 0000 0001 0000 1000)<br />
 	*SB    28 6 0* 	--Speichert 8 (0000 1000)
 	*SB    28 7 1*	--Speichert 1 (0000 0001)
 	*SB    28 8 2*	--Speichert 1 (0000 0001)
 	*SB    28 9 3*	--Speichert 10(0000 1010)
 - Die nächsten 2 SH Instructions speicher auf die selbe 32Bit-Addresse
-- Addr: 64536 | Inhalt: 16.056.575 (0000 0000 1111 0101 0000 0000 1111 1111)
+- Addr: 64536 | Inhalt: 16.056.575 (0000 0000 1111 0101 0000 0000 1111 1111)<br />
 	*SH    28 10 4*	--Speichert 32(0000 0000 1111 1111)
 	*SH    28 11 6*	--Speichert 2 (0000 0000 1111 0101)
-- Store Word Befehle. Jeder SW Speichert in eine eigene SW. _Imm_ steigt um 4, weil wir hier mit Byte Adressen arbeiten
+- Store Word Befehle. Jeder SW Speichert in eine eigene SW. _Imm_ steigt um 4, weil wir hier mit Byte Adressen arbeiten<br />
 	*SW    28 12 8*	--Speichert 32 (0010 0000) vom SLLI
 	*SW    28 13 12*	--Speichert 2  (0000 0010) vom SRLI
 	*SW    28 14 16*	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRAI 
@@ -139,7 +139,7 @@
 	*NOP*
 
 - **Load Instruction Test**
-- Adress: 64551*4 or Rg28 + 64 has a -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)
+- Adress: 64551*4 or Rg28 + 64 has a -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)<br />
 *LBU   28 8 64* 	--LBU niedrigster Byte von der obrigen Zahl 93(0101 1101) in Rg8 
 *SW    28 8 68* 	--Speichert Rg8(93) in 64552*4
 *LBU   28 8 67* 	--LBU 2 Höchster Byte von der obrigen Zahl 255(1111 1111) in Rg8 
