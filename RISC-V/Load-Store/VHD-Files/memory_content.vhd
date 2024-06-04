@@ -311,34 +311,107 @@ procedure filetomemory (
                 end if;             
 
 ---------------------            
---MADE BY 
+--MADE BY Yu-Hung TSAI
 ---------------------
                 -- U-type(1) --
-                when code_lui =>
+                when code_lui =>        
+                read(row, int1, success);                         
+                if success then
+                    read(row, int2, success);
+                    if success then
+                        -- Writing values into outputToMem32Bit to store it in 'Mem' --
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 7));  -- imm
+                        outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
+                        outputToMem32Bit(6 downto 0) := opcode;  -- opcode
+                            
+                        -- Save outputToMem32Bit in 'Mem' --
+                        Mem(PC) := outputToMem32Bit;
+                            
+--                            mem_check := bitVectorToString(outputToMem32Bit);  -- debugging
+--                            report("Check mem" & "(" & integer'image(PC) & "): "  & mem_check);  -- debugging
+                        
+                    end if;    
+                end if;
 
-
+                    
 ---------------------            
---MADE BY   
+--MADE BY Yu-Hung TSAI 
 ---------------------
                 -- U-type(2) -- 
-                when code_AUIPC =>
-
+                when code_AUIPC =>      
+                read(row, int1, success);                         
+                if success then
+                    read(row, int2, success);
+                    if success then
+                        -- Writing values into outputToMem32Bit to store it in 'Mem' --
+                        outputToMem32Bit(31 downto 12) := bit_vector(to_unsigned(int2, 7));  -- imm
+                        outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int1, 5));  -- rd
+                        outputToMem32Bit(6 downto 0) := opcode;  -- opcode
+                            
+                        -- Save outputToMem32Bit in 'Mem' --
+                        Mem(PC) := outputToMem32Bit;
+                            
+--                            mem_check := bitVectorToString(outputToMem32Bit);  -- debugging
+--                            report("Check mem" & "(" & integer'image(PC) & "): "  & mem_check);  -- debugging
+                        
+                    end if;    
+                end if;
                                    
 ---------------------            
---MADE BY             
+--MADE BY Yu-Hung TSAI            
 ---------------------         
                 -- I-type(3) --
                 when code_jalr =>
-              
+                read(row, int1, success);  
+                if success then
+                    read(row, int2, success);
+                    if success then
+                            -- Declaration of funct3 & funct7 -- (if not defined, means default value of zeros will be used)
+                            if mnemonicsOpcodeIn = "JALR " then
+                                funct3 := "000";
+                            end if;
+                                
+                            -- Writing values into outputToMem32Bit to store it in 'Mem' --
+                            outputToMem32Bit(31 downto 20) := bit_vector(to_unsigned(int3, 12));  -- imm
+                            outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
+                            outputToMem32Bit(14 downto 12) := funct3;  -- funct3
+                            outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int2, 5));  -- rd
+                            outputToMem32Bit(6 downto 0) := opcode;  -- opcode
+                        
+                        -- Save outputToMem32Bit in 'Mem' --
+                        Mem(PC) := outputToMem32Bit;
+                        end if;    
+                    end if;
+                end if;  
 
 ---------------------            
---MADE BY             
+--MADE BY Yu-Hung TSAI            
 ---------------------               
                 -- J-type modified -- 
                 when code_jal =>
+                read(row, int1, success);  
+                if success then
+                    read(row, int2, success);
+                    if success then
+                        read(row, int3, success);
+                        if success then
+                            -- Writing values into outputToMem32Bit to store it in 'Mem' --
+                            outputToMem32Bit(31 downto 20) := bit_vector(to_unsigned(int3, 12));  -- imm
+                            outputToMem32Bit(19 downto 15) := bit_vector(to_unsigned(int1, 5));  -- rs1
+                            outputToMem32Bit(14 downto 12) := funct3;  -- funct3
+                            outputToMem32Bit(11 downto 7) := bit_vector(to_unsigned(int2, 5));  -- rd
+                            outputToMem32Bit(6 downto 0) := opcode;  -- opcode
+                        
+                        -- Save outputToMem32Bit in 'Mem' --
+                        Mem(PC) := outputToMem32Bit;
 
+
+                            
+ imm_j(20) & imm_j(10 downto 1) & imm_j(11) & imm_j(19 downto 12) & rd & opcode
                 
-                
+                        end if;    
+                    end if;
+                end if;                  
                 
                 
                 
