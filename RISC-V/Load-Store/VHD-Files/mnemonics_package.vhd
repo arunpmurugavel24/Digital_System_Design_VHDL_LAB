@@ -48,7 +48,7 @@ procedure mnemonics_opcode (
             opcode := "0110011";
         
         -- I-Type --
-        elsif mnemonics = "LB   " or mnemonics = "LH   " or mnemonics = "LW   " or mnemonics = "LBU  " or mnemonics = "LHU  " or mnemonics = "XORI " or mnemonics = "ORI  " or mnemonics = "ANDI " or mnemonics = "JALR " or mnemonics = "ADDI " or mnemonics = "SLTI " or mnemonics = "SLTIU" then
+        elsif mnemonics = "LB   " or mnemonics = "LH   " or mnemonics = "LW   " or mnemonics = "LBU  " or mnemonics = "LHU  " or mnemonics = "XORI " or mnemonics = "ORI  " or mnemonics = "ANDI " or mnemonics = "JALR " or mnemonics = "ADDI " or mnemonics = "NOP  " or mnemonics = "SLTI " or mnemonics = "SLTIU" then
             if mnemonics = "LB   " or mnemonics = "LH   " or mnemonics = "LW   " or mnemonics = "LBU  " or mnemonics = "LHU  " then
                 opcode := "0000011";
             elsif mnemonics = "JALR " then
@@ -66,7 +66,7 @@ procedure mnemonics_opcode (
             opcode := "0100011";
         
         -- B-Type --
-        elsif mnemonics = "BEQ " or mnemonics = "BNE  " or mnemonics = "BLT  " or mnemonics = "BGE  " or mnemonics = "BLTU " or mnemonics = "BGEU " then
+        elsif mnemonics = "BEQ  " or mnemonics = "BNE  " or mnemonics = "BLT  " or mnemonics = "BGE  " or mnemonics = "BLTU " or mnemonics = "BGEU " then
             opcode := "1100011";
         
         -- U-Type --

@@ -137,7 +137,7 @@ procedure filetomemory (
 --MADE BY HIAN ZING VOON            
 ---------------------               
                 -- I-type(1) -- 
-                when code_arithmeticImm_nop =>
+                when code_arithmeticImm_nop =>  -- includes NOP
                 read(row, int1, success);  
                 if success then
                     read(row, int2, success);
@@ -200,6 +200,13 @@ procedure filetomemory (
                             
                         end if;            
                     end if;
+                elsif mnemonicsOpcodeIn = "NOP  " then
+                    report ("IT WORKS HYEAHYEAH");
+                    outputToMem32Bit(31 downto 20) := "000000000000";  -- imm
+                    outputToMem32Bit(19 downto 15) := "00000";  -- rs1
+                    outputToMem32Bit(14 downto 12) := "000";  -- funct3
+                    outputToMem32Bit(11 downto 7) := "00000";  -- rd
+                    outputToMem32Bit(6 downto 0) := opcode;  -- opcode
                 end if;
 
 ---------------------            

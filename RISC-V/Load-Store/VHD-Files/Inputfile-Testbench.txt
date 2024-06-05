@@ -48,8 +48,6 @@ SW    28 23 52
 SW    28 24 56
 SW    28 25 60
 SW    28 26 64
-stop
-
 ADDI  0 0 6
 ADDI  0 4 7 
 NOP   	
