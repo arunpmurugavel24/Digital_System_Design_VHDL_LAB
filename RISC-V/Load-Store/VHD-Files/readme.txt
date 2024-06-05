@@ -31,7 +31,8 @@ Auxiliary-Package: Das ist ein Paket, das hilft, um 'string' zu 'bit_vector' umz
 	Es ist sehr hilfreich beim Debuggen, weil man die gerade dekodierte 32-Bit Instruction als ein Output in 'string' darstellen kann.
 	Somit kann man den 'string' in Tcl console als 'report' ausgeben. 
 
-Mnemonics-Package: Das ist ein Paket, um Opcodes wie "ADD" oder "XOR" in 'bit_vector' umzuwandeln, damit es bei der Dekodierung verwendet werden kann. 
+Mnemonics-Package: Das ist ein Paket, um Mnemonics wie "ADD" oder "XOR" zu Opcodes wie "0110011" in 'string' umzuwandeln, danach zu 'bit_vector' mithilfe von Auxiliary-Package.
+				   Somit kann die Dekodierung von Rohtext zu 32-bit (bit_vector) diese Opcodes direkt verwenden. 
 
 System.vhd: Hier wird der Prozessor simuliert. Die Instruction werden aus der Mem geholt und ausgeführt.
 

@@ -1,14 +1,16 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- University: Technical University of Munich
+-- Student: Hian Zing Voon
 -- 
 -- Create Date: 31.05.2024 08:58:52
--- Design Name: Hian Zing Voon
+-- Design Name: mnemonics_package
 -- Module Name: mnemonics_package - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
--- Description: Categorised with guideline from pdfs (insert page)
+-- Description: Converts mnemonics like "ADD" or "XOR" to opcodes like "0110011" and output it in 'string'. It will
+--              then be further converted from 'string' to 'bit_vector' using function 'stringToBitVector' from auxiliary_package.vhd.
+--              Categorised with guidelines from the RISCV pdf obtained from the class.
 -- 
 -- Dependencies: 
 -- 

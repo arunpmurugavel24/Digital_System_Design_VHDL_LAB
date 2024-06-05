@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: Hian Zing Voon, Yu-Hung Tsai
+-- University: Technical University of Munich
+-- Student: Hian Zing Voon, Yu-Hung Tsai
 -- 
 -- Create Date: 24.05.2024 11:00:29
--- Design Name: 
+-- Design Name: memory_content
 -- Module Name: memory_content - Behavioral
 -- Project Name: Risc V functional CPU 
 -- Description: the functions for Loading the assembler txt file, transforming it into a 

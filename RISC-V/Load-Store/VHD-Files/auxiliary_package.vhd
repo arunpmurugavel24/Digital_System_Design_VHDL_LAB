@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: Hian Zing Voon
+-- University: Technical University of Munich
+-- Student: Hian Zing Voon
 -- 
 -- Create Date: 04.06.2024 00:23:53
 -- Design Name: 
@@ -8,7 +8,7 @@
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
--- Description: Contains 2 functions, stringToBitVector & bitVectorToString to be used universally
+-- Description: Contains 2 functions, stringToBitVector & bitVectorToString to be used universally.
 -- 
 -- Dependencies: 
 -- 
