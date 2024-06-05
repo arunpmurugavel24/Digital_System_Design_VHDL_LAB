@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: Tiemo Schmidt, Hian Zing Voon, Yu-Hung Tsai
--- Engineer: 
+-- University: Technical University of Munich
+-- Student: Tiemo Schmidt, Hian Zing Voon, Yu-Hung Tsai
 -- 
 -- Create Date: 05/15/2024 04:24:26 PM
 -- Design Name:  
@@ -14,7 +14,6 @@
 -- Additional Comments:
 -- 
 ----------------------------------------------------------------------------------
-
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -38,8 +37,8 @@ BEGIN
 ---------------------  
     --Declarations
         --Output declarations
-        file inputFile : text open read_mode is "C:\Users\Tiemo Schmidt\Documents\VHDL-Ecker\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
-        file Outputfile : Text open write_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\trace.txt";
+        file inputFile : text open read_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
+        file Outputfile : Text open write_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\trace.txt";
         variable l : line;
         
         
@@ -898,3 +897,11 @@ BEGIN
                  
         END process;
 end Behavioral;
+
+configuration SYSTEM_CONF of System is -- Configuration of System
+for Behavioral -- Architecture of System
+
+-- empty for the moment  
+
+end for;
+end SYSTEM_CONF;
