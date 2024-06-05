@@ -3,7 +3,7 @@
 -- Student: Hian Zing Voon
 -- 
 -- Create Date: 04.06.2024 00:23:53
--- Design Name: 
+-- Design Name: auxiliary_pack
 -- Module Name: auxiliary_pack - Behavioral
 -- Project Name: 
 -- Target Devices: 

@@ -6,8 +6,8 @@
 -- Design Name: memory_content
 -- Module Name: memory_content - Behavioral
 -- Project Name: Risc V functional CPU 
--- Description: It loads the file 'Inputfile-Testbench.txt' (written in assembly), then decode it into a 
---              32-bit 'bit_vector' with help from 'mnemonics_package.vhd' and 'auxiliary_package.vhd', 
+-- Description: It loads the file "Inputfile-Testbench.txt" (written in assembly), then decode it into a 
+--              32-bit 'bit_vector' with help from "mnemonics_package.vhd" and "auxiliary_package.vhd", 
 --              then save it to the memory, 'Mem' with PC as program counter.
 -- 
 -- Revision:
@@ -63,9 +63,9 @@ procedure filetomemory (
         -- Read is a 2-step-process; first extract the entire line via "readline", then read part by part via "read"
 --        while not endfile(inputFile) loop  -- loop through the entire .txt file
         while stop_detected loop
-            funct3 := "000";
-            funct7 := "0000000";
-            outputToMem32Bit := "00000000000000000000000000000000";
+            funct3 := "000";  -- reset funct3 to its default value of zeros
+            funct7 := "0000000";  -- reset funct7 to its default value of zeros
+            outputToMem32Bit := "00000000000000000000000000000000"; -- reset funct3 to its default value zeros
             readline (inputFile, row);
             success := TRUE;
             
