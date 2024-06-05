@@ -9,7 +9,7 @@
 -- Target Devices: 
 -- Tool Versions: 
 -- Description: Converts mnemonics like "ADD" or "XOR" to opcodes like "0110011" and output it in 'string'. It will
---              then be further converted from 'string' to 'bit_vector' using function 'stringToBitVector' from auxiliary_package.vhd.
+--              then be further converted from 'string' to 'bit_vector' using function 'stringToBitVector' from 'auxiliary_package.vhd'.
 --              Categorised with guidelines from the RISCV pdf obtained from the class.
 -- 
 -- Dependencies: 

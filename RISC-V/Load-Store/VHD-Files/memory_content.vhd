@@ -6,8 +6,9 @@
 -- Design Name: memory_content
 -- Module Name: memory_content - Behavioral
 -- Project Name: Risc V functional CPU 
--- Description: the functions for Loading the assembler txt file, transforming it into a 
---              32Bit bit_vector and then saving it to the Memory.
+-- Description: It loads the file 'Inputfile-Testbench.txt' (written in assembly), then decode it into a 
+--              32-bit 'bit_vector' with help from 'mnemonics_package.vhd' and 'auxiliary_package.vhd', 
+--              then save it to the memory, 'Mem' with PC as program counter.
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
