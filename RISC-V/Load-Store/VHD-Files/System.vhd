@@ -37,8 +37,8 @@ BEGIN
 ---------------------  
     --Declarations
         --Output declarations
-        file inputFile : text open read_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
-        file Outputfile : Text open write_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\trace.txt";
+        file inputFile : text open read_mode is "C:\Users\Tiemo Schmidt\Documents\VHDL-Ecker\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
+        file Outputfile : Text open write_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\trace.txt";
         variable l : line;
         
         
@@ -239,7 +239,7 @@ BEGIN
                                 --need to load next 32 Bit cell and get first 8 Bit
                                 Data := Mem(load_addr + 1);
                                 for i in 7 downto 0 LOOP
-                                    Data2(i) := Data(i);
+                                    Data2(i+8) := Data(i);
                                 end LOOP;
                             when others =>
                                 --something went wrong
@@ -256,6 +256,8 @@ BEGIN
                         end LOOP;
                         --save Data to rd
                         Reg(rd) := Data32Bit;
+                        
+                    ---------------------    
                     when 2 =>
                     --Load Word
                     --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
@@ -265,46 +267,45 @@ BEGIN
                         case (addr-(load_addr*4)) is
                         when 0 =>
                             --Just load Word
-                            Data32Bit := Mem(load_addr);
+                            Data32Bit := Data;
                         
                         when 1 =>
                             --Load upper 24Bit from load_addr and lower 8Bit from load_addr+1
                             for i in 31 downto 8 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i-8) := Data(i);
                             end LOOP;
                             Data := Mem(load_addr + 1);
                             for i in 7 downto 0 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i+24) := Data(i);
                             end LOOP;
                         
                         when 2 =>
                             --Load upper 16Bit from load_addr and lower 16Bit from load_addr+1
                             for i in 31 downto 16 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i-16) := Data(i);
                             end LOOP;
                             Data := Mem(load_addr + 1);
                             for i in 15 downto 0 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i+16) := Data(i);
                             end LOOP;
                             
                         when 3 =>
                             --Load upper 8Bit from load_addr and lower 24Bit from load_addr+1
                             for i in 31 downto 24 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i-24) := Data(i);
                             end LOOP;
                             Data := Mem(load_addr + 1);
                             for i in 23 downto 0 LOOP
-                                Data32Bit(i) := Data(i);
+                                Data32Bit(i+8) := Data(i);
                             end LOOP;
                             
                         when others =>
                             --something went wrong
                                 report "something is wrong with the adress calculation. addr: " & integer'image(addr) & "  load_addr: " & integer'image(load_addr) & "  difference: " & integer'image(addr-load_addr) severity error;
                         end case;
-                        
                         Reg(rd) := Data32Bit;
                         
-                    when 3 => 
+                    when 4 => 
                     --Load byte unsigned
                         --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
                         trace(l,    Outputfile, PC, string'("LBU"), imm, rs, 0,  rd);
@@ -352,8 +353,8 @@ BEGIN
                         Reg(rd) := Data32Bit;
                         --end
                         
-                    when 4 =>
-                    --Load Word unsigned
+                    when 5 =>
+                    --Load HalfWord unsigned
                     --   (line, File,       PC, OP-Code,       imm, rs1,rs2,rd) 
                         trace(l,    Outputfile, PC, string'("LHU"), imm, rs, 0,  rd);
                         --Copy upstairs, exchange fille up Data1(7) with '0'
@@ -532,6 +533,7 @@ BEGIN
                 rs2 := TO_INTEGER(unsigned(Inst(24 downto 20)));    --Source Register 2
                 rd := TO_INTEGER(unsigned(Inst(11 downto 7)));      --Destination Register
                 func7 := TO_INTEGER(unsigned(Inst(31 downto 25)));
+                Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                 --func3+func7 combined with Opcode, specify what operation to perform
                 case func3 is
                     when 0 => 
@@ -645,7 +647,7 @@ BEGIN
                                 Reg(rd) := bit_vector(to_signed((TO_INTEGER(signed(Reg(rs1))) + 0), 32));
                             end if;
                     when 1 => --SLLI
-                        trace(l, Outputfile, PC, string'("SLLI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("SLLI"), imm, rs1, 0,  rd);
                         Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                         Data32Tmp := Reg(rs1);
                         for i in 0 to (31 - shamt) Loop
@@ -653,7 +655,7 @@ BEGIN
                         end Loop;
                         Reg(rd) := Data32Bit;
                     when 2 => --SLTI
-                        trace(l, Outputfile, PC, string'("SLTI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("SLTI"), imm, rs1, 0,  rd);
                         if (to_integer(signed(Reg(rs1))) < to_integer(to_signed(imm, 32))) then
                             Data32Bit(0) := '1';
                         end if;
@@ -662,7 +664,7 @@ BEGIN
                         end if;
                         Reg(rd) := Data32Bit;
                     when 3 => --SLTUI
-                        trace(l, Outputfile, PC, string'("SLTUI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("SLTUI"), imm, rs1, 0,  rd);
                         if to_integer(unsigned(Reg(rs1))) < to_integer(to_unsigned(imm, 32)) then
                             Data32Bit(0) := '1';
                         end if;
@@ -671,23 +673,23 @@ BEGIN
                         end if;
                         Reg(rd) := Data32Bit;
                     when 4 => --XORI
-                        trace(l, Outputfile, PC, string'("XORI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("XORI"), imm, rs1, 0,  rd);
                         Reg(rd) := Reg(rs1) xor bit_vector(to_signed(imm, 32));
                     when 5 =>
                         case func7 is
-                            when 0 => --SRAi
-                                trace(l, Outputfile, PC, string'("SRA"), imm, rs1, rs2,  rd);
+                            when 32 => --SRAi
+                                trace(l, Outputfile, PC, string'("SRAI"), imm, rs1, 0,  rd);
                                 Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                                 Data32Tmp := Reg(rs1);
                                 for i in 31 downto shamt Loop
                                     Data32Bit(i - shamt) := Data32Tmp(i);
                                 end Loop;
                                 for j in 31 downto (31 - shamt) Loop
-                                    Data32Bit(j) := Data32Bit(31-shamt);
+                                    Data32Bit(j) := Data32tmp(31);
                                 end Loop;
                                 Reg(rd) := Data32Bit;
-                            when 32 => --SRLi
-                                trace(l, Outputfile, PC, string'("SRL"), imm, rs1, rs2,  rd);
+                            when 0 => --SRLi
+                                trace(l, Outputfile, PC, string'("SRLI"), imm, rs1, 0,  rd);
                                 Data32Bit := "00000000000000000000000000000000"; --Final Bits Will be saved here
                                 Data32Tmp := Reg(rs1);
                                 for i in 31 downto shamt Loop
@@ -698,10 +700,10 @@ BEGIN
                                 report("Error at SRAI/SRLI func7");
                         end case;
                     when 6 => --ORI
-                        trace(l, Outputfile, PC, string'("ORI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("ORI"), imm, rs1, 0,  rd);
                         Reg(rd) := Reg(rs1) or bit_vector(to_signed(imm, 32));
                     when 7 => --ANDI
-                        trace(l, Outputfile, PC, string'("ANDI"), imm, rs1, rs2,  rd);
+                        trace(l, Outputfile, PC, string'("ANDI"), imm, rs1, 0,  rd);
                         Reg(rd) := Reg(rs1) and bit_vector(to_signed(imm, 32));
                     when others =>
                         report "something is wrong with the Arithmetic Immediate Functions";
@@ -889,6 +891,7 @@ BEGIN
             when others =>
                 --Error in OPCODE / or not implemented op-code
                 report "something is wrong with the OP-Code case. Op-Code(as integr): " & integer'image(to_integer(unsigned(OP))) & "   PC: " & integer'image(PC); --cant report Bit_vector transformed to integer
+                report"Instruction: " & bitvectortostring(Inst);
         end case;
     end LOOP;
         --stop_detected got set to false, stop programm and dump memory

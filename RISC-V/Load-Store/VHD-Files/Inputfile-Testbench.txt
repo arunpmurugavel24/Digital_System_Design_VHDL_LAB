@@ -9,14 +9,14 @@ XORI  30 218 11
 ADDI  0 2 29
 SLLI  29 5 12
 SRLI  12 4 13
-LUI   27 -61950
+LUI   27 986626
 ADDI  27 1502 27
 SRAI  27 4 14
 LUI   15 619
 AUIPC 16 619
 ADD   6 7 17
-SLT   6 7 18
-SLTU  6 7 19
+SLT   7 6 18
+SLTU  7 6 19
 AND   30 31 20
 OR    30 31 21
 XOR   30 31 22
@@ -50,11 +50,11 @@ SW    28 25 60
 SW    28 26 64
 ADDI  0 0 6
 ADDI  0 4 7 
-NOP   	
+NOP    
 BEQ   6 7 12
 ADDI  6 1 6
 JAL   0 -12
-NOP
+NOP     
 BNE   6 7 12
 ADDI  6 -1 6
 JAL   0 -12
@@ -63,7 +63,7 @@ ADDI  6 1 6
 JAL   0 12
 BGE   6 7 12
 NOP		
-NOP
+NOP     
 ADDI  0 0 6
 ADDI  0 4 7 
 NOP   	
@@ -72,7 +72,7 @@ ADDI  6 1 6
 JAL   0 12
 BGEU  6 7 12
 NOP   		
-NOP   
+NOP     
 LBU   28 8 64
 SW    28 8 68 
 LBU   28 8 67  
@@ -83,7 +83,8 @@ LH    28 8 66
 SW    28 8 80 
 LHU   28 8 66
 SW    28 8 84
-LW    28 8 66
+LW    28 8 64
 SW    28 8 88
+LW    28 8 64
 SB    28 8 92
 STOP    

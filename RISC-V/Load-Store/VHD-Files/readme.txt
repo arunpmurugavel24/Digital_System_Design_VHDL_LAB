@@ -62,13 +62,13 @@ ORI   30 218 10
 XORI  30 218 11
 --Test ADDI. Speicher 2 in Reg9 (0010)
 ADDI  0 2 29
---Test SLLI. Leftshift Reg29 5 mal und speichert in Reg12. 0001 0000 (16)
+--Test SLLI. Leftshift Reg29(2) 5 mal und speichert in Reg12. 0100 0000 (64)
 SLLI  29 5 12
 --Test SRLI. Rightshift Reg12 (enthält 16) 4 mal. 0100 (4) 
 SRLI  12 4 13
 --Setup für weitere Test
---Lädt mit LUI und ADDI -253.745.698 in Reg7
-LUI   27 -61950
+--Lädt mit LUI und ADDI -253.745.698 in Reg27
+LUI   27 986.626
 ADDI  27 1502 27
 --Test SRAI. Arithmetic Rightshift Reg27 4mal. -15.859.107
 SRAI  27 4 14
@@ -78,10 +78,10 @@ LUI   15 619
 AUIPC 16 619
 --Test Add. Reg6(8)+Reg7(1)=9 in Reg17
 ADD   6 7 17
---Test SLT. Reg6(8) SLT Reg7(1) = Reg18(16)
-SLT   6 7 18
---Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(16)
-SLTU  6 7 19
+--Test SLT. Reg6(8) SLT Reg7(1) = Reg18(1)
+SLT   7 6 18
+--Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(0)
+SLTU  7 6 19
 --Test And. R30(0010 1111) AND R31(1101 1010) = R20(0000 1010)
 AND   30 31 20
 --Test And. R30(0010 1111) OR R31(1101 1010) = R20(1111 0101)
@@ -115,19 +115,19 @@ SB    28 9 3	--speichert 10(0000 1010)
 SH    28 10 4	--speichert 32(0000 0000 1111 1111) 
 SH    28 11 6	--speichert 2 (0000 0000 1111 0101)
 --Store Word Befehle. Jeder Sw speichert in eine eigene SW. Imm steigt um 4, weil wir hier mit Byte Adressen arbeiten
-SW    28 12 8	--Speichert 32 (0010 0000) vom SLLI
-SW    28 13 12	--Speichert 2  (0000 0010) vom SRLI
+SW    28 12 8	--Speichert 64 (0100 0000) vom SLLI
+SW    28 13 12	--Speichert 4  (0000 0100) vom SRLI
 SW    28 14 16	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRAI 
 SW    28 15 20	--Speichert 2.535.424 (Vom LUI Befehl)
 SW    28 16 24	--Speichert 2.535.440 (Vom AUIPC Befehl)
 SW    28 17 28	--Speichert 9 vom ADD
-SW    28 18 32	--Speichert 16 (0001 0000) vom SLT
-SW    28 19 36	--Speichert 16 (0001 0000) vom SLTU
+SW    28 18 32	--Speichert 1 vom SLT
+SW    28 19 36	--Speichert 1 vom SLTU
 SW    28 20 40	--Speichert 10 (0000 1010) vom AND
 SW    28 21 44	--Speichert 255(1111 1111) vom OR
 SW    28 22 48	--Speichert 245(1111 0101) vom XOR
-SW    28 23 52	--Speichert 16 (0001 0000) vom SLL
-SW    28 24 56	--Speichert 2  (0000 0010) vom SRL
+SW    28 23 52	--Speichert 32 (0010 0000) vom SLL
+SW    28 24 56	--Speichert 4  (0000 0100) vom SRL
 SW    28 25 60	--Speichert 7 vom Sub
 SW    28 26 64	--Speichert -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101) vom SRA 
 
@@ -176,11 +176,42 @@ SW    28 8 80 	--speichert Rg8(-242) in 64555*4
 LHU   28 8 66 	--LhU die zwei höchsten Byte 65.294(1111 1111 0000 1110)
 SW    28 8 84	--speichert Rg8(65.294) in 64556*4
 --LW
-LW    28 8 66   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)
+LW    28 8 64   --Lädt die ganze Zahl von oben -15.859.107 (1111 1111 0000 1110 0000 0010 0101 1101)
 SW    28 8 88	--Speichert  Rg8(-15.859.107) in 64557*4
 --Test SB bei vollem Register Rg8
+LW    28 8 64
 SB    28 8 92   --sollte unterste Byte 93(0101 1101) in 64558*4 speichern
 stop   		--signalisiert Ende der Input datei und stop simulation mit wait
 
 
+
+---------------------------
+Was rauskommen sollte:
+--------Memory DUMP--------
+address|mem-Content
+---------------------------
+64535  |167837960  
+64536  |16056575   
+64537  |64         
+64538  |4          
+64539  |-15.859.107
+64540  |2535424    
+64541  |2535440    
+64542  |9          
+64543  |1
+64544  |1
+64545  |10         
+64546  |255        
+64547  |245        
+64548  |32         
+64549  |4          
+64550  |7          
+64551  |-15859107  
+64552  |93         
+64553  |255        
+64554  |-1         
+64555  |-242       
+64556  |65294      
+64557  |-15859619  
+64558  |93         
 

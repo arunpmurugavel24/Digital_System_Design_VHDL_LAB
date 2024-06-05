@@ -207,6 +207,9 @@ procedure filetomemory (
                     outputToMem32Bit(14 downto 12) := "000";  -- funct3
                     outputToMem32Bit(11 downto 7) := "00000";  -- rd
                     outputToMem32Bit(6 downto 0) := opcode;  -- opcode
+                    
+                    -- Save outputToMem32Bit in 'Mem' --
+                    Mem(PC) := outputToMem32Bit;
                 end if;
 
 ---------------------            
