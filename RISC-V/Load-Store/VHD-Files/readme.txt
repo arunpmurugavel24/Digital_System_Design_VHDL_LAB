@@ -80,7 +80,7 @@ AUIPC 16 619
 ADD   6 7 17
 --Test SLT. Reg6(8) SLT Reg7(1) = Reg18(1)
 SLT   7 6 18
---Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(0)
+--Test SLTU. Reg6(8) SLTU Reg7(1) = Reg19(1)
 SLTU  7 6 19
 --Test And. R30(0010 1111) AND R31(1101 1010) = R20(0000 1010)
 AND   30 31 20
