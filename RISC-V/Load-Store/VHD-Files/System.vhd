@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
 -- University: Technical University of Munich
--- Student: Tiemo Schmidt, Hian Zing Voon, Yu-Hung Tsai
+-- Student: Tiemo Schmidt, Hian Zing Voon, Yu-Hung Tsai, Arun Prema Murugavel
 -- 
 -- Create Date: 05/15/2024 04:24:26 PM
 -- Design Name:  
@@ -37,8 +37,8 @@ BEGIN
 ---------------------  
     --Declarations
         --Output declarations
-        file inputFile : text open read_mode is "C:\Users\Tiemo Schmidt\Documents\VHDL-Ecker\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";
-        file Outputfile : Text open write_mode is "C:\Users\Tiemo Schmidt\Downloads\project_1\trace.txt";
+        file inputFile : text open read_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\VHD-Files\Inputfile-Testbench.txt";  -- Add own filepath
+        file Outputfile : Text open write_mode is "C:\Users\hianz\Documents\git\Digital_System_Design_VHDL_LAB\RISC-V\Load-Store\trace.txt";  -- Add own filepath
         variable l : line;
         
         
@@ -92,10 +92,7 @@ BEGIN
         variable InstBit : bit_vector (31 downto 0);    --Instruction as Bit, for easier disassamble     
         variable imm32Bit : bit_vector(31 downto 0) := "00000000000000000000000000000000";    --Immidiet need to be reorganized, easyer done as bit_vector
         variable immInteger : integer RANGE 2**20-1 downto 0;
-        
-        --For U-Type Instruction
-        variable imm_lui: bit_vector(31 downto 0);
-        
+              
         --For R-Type Instruction
         -- For AUIPC Instruction 
         variable new_pc   : integer;

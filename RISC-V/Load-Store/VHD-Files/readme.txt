@@ -25,7 +25,7 @@ Input-File: Wir haben uns auf einen simplen Assembler Code festgelegt. Die Opcod
 	Der Op-Code LB muss dem entsprechen mit 3 Leerzeichen aufgefüllt werden. Der Code im Inputfile wird am Ende dieses Files nochmals mit Kommentaren stehen.
 
 Paths-for-Files: Wir haben leider nicht herrausfinden können wie man relativ Paths in Vhdl umsetzt. Deswegen muss der Path 
-	für die Inputfile(Zeile 41 in System.vhd) und Outputfile(Zeile 41 in System.vhd) manuell geändert werden.
+	für die Inputfile(Zeile 40 in System.vhd) und Outputfile(Zeile 41 in System.vhd) manuell geändert werden.
 
 Auxiliary-Package: Das ist ein Paket, das hilft, um 'string' zu 'bit_vector' umzuwandeln und auch andersherum. 
 	Es ist sehr hilfreich beim Debuggen, weil man die gerade dekodierte 32-Bit Instruction als ein Output in 'string' darstellen kann.

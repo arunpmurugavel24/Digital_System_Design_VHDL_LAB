@@ -38,26 +38,24 @@ procedure filetomemory (
 ---------------------
     variable inputFile : in text;
     Mem : inout Mem_Type ) is 
-    variable row : line;
-    variable PC : integer :=0;
-    variable stop_detected : boolean := true; 
+    variable row : line;  -- line to be used in 'readline' and 'read'
+    variable PC : integer :=0;  -- program counter
+    variable stop_detected : boolean := true;  -- to stop the simulation; true - start, false - stop
     variable mnemonicsOpcodeIn : string(5 downto 1);  -- The line in the text file MUST be longer than this defined string
     variable int1 : integer; -- rs1/rd depending on the case
     variable int2 : integer;  -- rs2/imm depending on the case
     variable int3 : integer;  -- rd/imm depending on the case
-    variable funct3 : bit_vector(2 downto 0) := "000";
-    variable funct7 : bit_vector(6 downto 0) := "0000000";
-    variable success : boolean;
+    variable funct3 : bit_vector(2 downto 0) := "000";  -- funct3 with default of zeros
+    variable funct7 : bit_vector(6 downto 0) := "0000000";  -- funct7 with default of zeros
+    variable success : boolean;  -- success when line could be read
     variable outputToMem32Bit : bit_vector(31 downto 0) := "00000000000000000000000000000000";  -- bit_vector is defined to use downto
-    variable check : string(31 downto 0);
-    variable outputToMem32Bit_string : string(31 downto 0);
-    variable opcode_string : string(7 downto 1);
-    variable opcode : bit_vector(7 downto 1);
+    variable opcode_string : string(7 downto 1);  -- opcode in 'string'
+    variable opcode : bit_vector(7 downto 1);  -- opcode in 'bit_vector'
+    variable immStore : bit_vector(11 downto 0);  -- used for store instruction
+    variable immBranch : bit_vector(12 downto 0);  -- used for branch instruction
+    variable immJump : bit_vector(20 downto 0);  -- used for jump instruction
     variable mem_check : string(31 downto 0);  -- used for debugging
-    variable immStore : bit_vector(11 downto 0);
-    variable immBranch : bit_vector(12 downto 0);
-    variable immJump : bit_vector(20 downto 0);
-          
+         
     begin
     
         -- Read is a 2-step-process; first extract the entire line via "readline", then read part by part via "read"
@@ -66,7 +64,7 @@ procedure filetomemory (
             funct3 := "000";  -- reset funct3 to its default value of zeros
             funct7 := "0000000";  -- reset funct7 to its default value of zeros
             outputToMem32Bit := "00000000000000000000000000000000"; -- reset funct3 to its default value zeros
-            readline (inputFile, row);
+            readline (inputFile, row);  -- read the entire line/row
             success := TRUE;
             
             -- Read Opcode -- 
@@ -440,7 +438,7 @@ procedure filetomemory (
                     end if;
                 end if;
                 
-                -- To stop the program --           
+                -- To stop the simulation --           
                 when code_stop =>
                     outputToMem32Bit(6 downto 0) := opcode;
                     
