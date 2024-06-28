@@ -74,7 +74,7 @@ architecture Behavioral of Instruction_Decoder is
                 rd_out <=  rd;
                 f <= func3;
                 a <= rs1_data;
-                b <= imm & rs2;
+                b <= b"0000_0000_0000_0000_0000" & imm & rs2;   --vielleicht Signed extended!!!!!!!!!!!!!!
                 --Maybe set some flags
                 
             when b"0110011" =>
@@ -110,6 +110,7 @@ architecture Behavioral of Instruction_Decoder is
                 --Instruction is S-Type. Store type
             when b"1100011" =>
                 --Instruction is B-Type. Branch
+                --we need to compare and then jump the immidiet
             when b"0000011" =>
                 --Instruction is I-Type Load
             when b"0110111" =>

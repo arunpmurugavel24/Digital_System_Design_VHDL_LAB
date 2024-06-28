@@ -43,7 +43,7 @@ architecture Behavioral of RegisterFile is
     type Reg_Type is array 
     	(integer range 31 downto 1) of RegDataType; --donwto 1 because 0 is always 0
 begin
-    process(clk, res)
+    process(clk, res, rd1_addr, rd2_addr)
         --Register as Variable, Because Reg as Signal is time consuming for Synthesis
         variable reg : Reg_type;
         constant reg0 : bit_vector(31 downto 0) := b"0000_0000_0000_0000_0000_0000_0000_0000";  --always 0 and cant be changed
@@ -52,24 +52,24 @@ begin
         --Set every Register to 0
         reg := (others => b"0000_0000_0000_0000_0000_0000_0000_0000");
         else
-            if rising_edge(clk) then
-                --Output Part. Need to check if Reg0 is wanted
-                if rd1_addr = b"0_0000" then
-                    --Register 0
-                    rd1_data <= reg0;
-                else
-                    --not reg0
-                rd1_data <= reg(TO_INTEGER(unsigned(rd1_addr)));    --Output rs1
-                end if;
-                if rd2_addr = b"0_0000" then
-                    --Register 0
-                    rd2_data <= reg0;
-                else
-                    --not reg0
-                rd2_data <= reg(TO_INTEGER(unsigned(rd2_addr)));    --Output rs2
-                end if;
+            --Output Part. Need to check if Reg0 is wanted
+            if rd1_addr = b"0_0000" then
+                --Register 0
+                rd1_data <= reg0;
+            else
+                --not reg0
+            rd1_data <= reg(TO_INTEGER(unsigned(rd1_addr)));    --Output rs1
+            end if;
+            if rd2_addr = b"0_0000" then
+                --Register 0
+                rd2_data <= reg0;
+            else
+                --not reg0
+            rd2_data <= reg(TO_INTEGER(unsigned(rd2_addr)));    --Output rs2
+            end if;
                 
-                --Write Part
+            --Write Part
+            if rising_edge(clk) then
                 if wr_enab = '1' then   --Write to reg if wr_enab is true
                     Reg(TO_INTEGER(unsigned(wr_addr))) := wr_data; 
                 end if; 

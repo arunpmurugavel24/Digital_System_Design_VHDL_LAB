@@ -30,12 +30,16 @@ entity Inst_holder is
 end Inst_holder;
 
 architecture Behavioral of Inst_holder is
+    signal Inst_Reg : bit_vector(31 downto 0);
 begin
+    --inst_output should always be the saved Data in Inst_Reg 
+    inst_output <= Inst_Reg;
+    --Process for updating Reg
     process(clk)
     begin
         if clk = '1' AND clk'event AND enab = '1' then
-            --Put Input to Output
-            inst_output <= inst_input;
+            --Put Input into Reg
+            inst_Reg <= inst_input;
         end if;
     end process;
 end Behavioral;
