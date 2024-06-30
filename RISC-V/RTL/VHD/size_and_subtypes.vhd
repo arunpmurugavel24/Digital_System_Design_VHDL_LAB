@@ -33,7 +33,8 @@ package cpu_defs_pack is
 
     -- Sizes of Register --
     constant RegDataSize    : integer := 32;
-    constant RegAddrSize    : integer := 5; 
+    constant RegAddrSize    : integer := 5;
+    constant MemSize        : integer := 15; --Size of Mem in Bit
 
     -- Type of Opcode --
     subtype opcode_type is bit_vector(6 downto 0);

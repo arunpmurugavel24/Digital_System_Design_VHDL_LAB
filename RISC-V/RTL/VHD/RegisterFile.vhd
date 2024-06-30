@@ -42,11 +42,14 @@ end RegisterFile;
 architecture Behavioral of RegisterFile is
     type Reg_Type is array 
     	(integer range 31 downto 1) of RegDataType; --donwto 1 because 0 is always 0
+    	        
 begin
+
     process(clk, res, rd1_addr, rd2_addr)
         --Register as Variable, Because Reg as Signal is time consuming for Synthesis
         variable reg : Reg_type;
         constant reg0 : bit_vector(31 downto 0) := b"0000_0000_0000_0000_0000_0000_0000_0000";  --always 0 and cant be changed
+        
     begin
         if res = '1' then
         --Set every Register to 0
