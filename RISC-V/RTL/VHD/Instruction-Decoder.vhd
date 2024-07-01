@@ -248,7 +248,7 @@ architecture Behavioral of Instruction_Decoder is
                 a(11 downto 0) <= x"000";
                 rs2_adress <= b"0_0000";  --Register 0
                 b(15 downto 0) <= PC;
-                b(31 downto 15) <= x"0000";
+                b(31 downto 16) <= x"0000";
                 f <= "01000"; --add
                 rd_Adress <= rd;
                 --next state save the Alu result to rd
@@ -263,7 +263,7 @@ architecture Behavioral of Instruction_Decoder is
                 for i in 31 downto 20 LOOP
                     b(i) <= imm(6);     --sign extended
                 end LOOP;
-                b(19 downto 12) <= rs1;
+                b(19 downto 12) <= rs1 & func3;
                 b(11) <= rs2(0);
                 b(10 downto 1) <= imm(5 downto 0) & rs2(4 downto 1);
                 f <= "01000";           --add
