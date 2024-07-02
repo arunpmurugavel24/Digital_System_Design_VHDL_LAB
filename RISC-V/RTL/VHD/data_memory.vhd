@@ -25,14 +25,14 @@ entity Data_Memory is
         clk        : in  BIT;
         mem_read   : in  BIT;
         mem_write  : in  BIT;
-        addr       : in  BIT_VECTOR(31 downto 0);
-        write_data : in  BIT_VECTOR(31 downto 0);
-        read_data  : out BIT_VECTOR(31 downto 0)
+        addr       : in  BIT_VECTOR(7 downto 0);
+        write_data : in  BIT_VECTOR(7 downto 0);
+        read_data  : out BIT_VECTOR(7 downto 0)
     );
 end Data_Memory;
 
 architecture Behavioral of Data_Memory is
-    type memory_type is array (0 to 255) of BIT_VECTOR(31 downto 0); -- 256 x 32-bit memory
+    type memory_type is array (0 to 255) of BIT_VECTOR(7 downto 0); -- 256 x 8-bit memory
     signal memory : memory_type := (others => (others => '0'));
 begin
     process(clk, mem_write, addr, write_data)
