@@ -81,7 +81,8 @@ architecture Behavioral of Inst_Decoder_Tb is
           mem_flag : out bit_vector(2 downto 0);        --Tells the memory what it works with (byte000, halfword 001, word 010,byte unsigend 100, Halfword unsigned 101) Keeps with func3 conventions 
           f : out bit_vector(4 downto 0);               --what ADC should do and which input of mux it uses. f(4 downto 3) is Mux, f(2 downto 0) is func3
           a, b : out bit_vector(31 downto 0);           --Inputs for ADC
-          res : in bit);
+          res : in bit;
+          reg_mux : out bit_vector(1 downto 0));
      end component;
      
      component RegisterFile
@@ -112,7 +113,7 @@ architecture Behavioral of Inst_Decoder_Tb is
      signal store_flag : bit;                         --tells controller for mem store access
      signal load_flag : bit;                          --tells controller for mem load access
      signal mem_flag : bit_vector(2 downto 0);        --Tells the memory what it works with (byte000, halfword 001, word 010,byte unsigend 100, Halfword unsigned 101) Keeps with func3 conventions 
-     
+     signal reg_mux : bit_vector (1 downto 0);
      --Visual crutches for the waveform
      signal operation : string(6 downto 1);
      signal Ergebnis : integer;
@@ -129,7 +130,7 @@ architecture Behavioral of Inst_Decoder_Tb is
     --f, a, b are named like this and ALREADY EXIST. Others you need to create
     
 begin
-    UUT1 : Instruction_decoder Port Map(Inst, Open, rs1_adress, rs2_adress, rd3, rs1_data, rs2_data, PC, PC_imm, next_state_flag, jmp_flag, store_flag, load_flag, mem_flag, f, a, b, res);
+    UUT1 : Instruction_decoder Port Map(Inst, Open, rs1_adress, rs2_adress, rd3, rs1_data, rs2_data, PC, PC_imm, next_state_flag, jmp_flag, store_flag, load_flag, mem_flag, f, a, b, res, reg_mux);
     Reg : RegisterFile PORT MAP(clk, res, rs1_adress, rs2_adress, rd_adress, rs1_data, rs2_data, rd_data, wr_enab);
     --ALU HERE
     --ALU : 
