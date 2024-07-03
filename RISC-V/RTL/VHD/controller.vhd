@@ -80,10 +80,8 @@ begin
     begin
         if reset = '1' then
             state <= FETCH;
-            instr_decode_flags_reset <= '1';
         elsif clk = '1' and clk'event then
             state <= next_state;
-            instr_decode_flags_reset <= '0';
         end if;
     end process;
 
