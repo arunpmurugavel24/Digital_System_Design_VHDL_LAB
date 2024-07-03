@@ -65,7 +65,9 @@ begin
         res <= '1';
         wait for 100ns;
         res <= '0';
-        wait for 150ns; --should count up to 3
+        wait for 50ns;
+        enabl_w <= '1';
+        wait for 150ns; --should count up to 12
         imm <= bit_vector(TO_SIGNED(30, 16));
         Alu_condition <= '1';
         wait for 50ns;
@@ -76,6 +78,8 @@ begin
         wait for 50 ns;
         jmp_condition <= '0';
         wait for 500ns;
+        enabl_w <= '0';     --should no longer count
+        wait for 200ns;     --shouldnt count for 200ns (4times)
         wait;
         
     end Process;

@@ -46,8 +46,8 @@ begin
             --Res counter
             count <= x"0000";
         --When no jmp Instruction    
-        --elsif enab_w then         --Uncomment if not every clk cycle it should increment
-        elsif clk = '1' AND clk'event AND jmp_condition = '0' then
+        --if we are in EX then pc should increment, enab_w = 1;
+        elsif enab_w = '1' AND clk = '1' AND clk'event AND jmp_condition = '0' then
             --Increment count by 4 8Bit-Addressesor imm
             case Alu_condition is
             when '0' =>
@@ -59,9 +59,9 @@ begin
             end case;
         
         --jmp Instruction case
-        elsif clk = '1' AND clk'event AND jmp_Condition = '1' then 
+        elsif enab_w = '1' AND clk = '1' AND clk'event AND jmp_Condition = '1' then 
             --set count to new Address
-            count <= unsigned((Alu_adress(15 downto 1) & b"0")); --sets LSB to 0
+            count <= unsigned(bit_vector'(Alu_adress(15 downto 1) & b"0")); --sets LSB to 0
         end if;
     end process;
 end Behavioral;

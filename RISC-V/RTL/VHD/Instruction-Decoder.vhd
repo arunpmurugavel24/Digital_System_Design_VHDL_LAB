@@ -105,10 +105,10 @@ architecture Behavioral of Instruction_Decoder is
                         f<= "11" & func3;
                     when "010"=>
                         --slti
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "011"=>
                         --sltiu
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "100"=>
                         --xori
                         f <= "10" & func3;
@@ -149,11 +149,11 @@ architecture Behavioral of Instruction_Decoder is
                         --shift left
                         f <= "11" & func3;
                     when "010"=>
-                        --slt
-                        f <= "11" & func3;
+                        --slt (set lower than)
+                        f <= "00" & func3;
                     when "011"=>
                         --sltu
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "100"=>
                         --xor
                         --adnere Imm länge. drüber schauen, extenden, absenden
@@ -178,6 +178,7 @@ architecture Behavioral of Instruction_Decoder is
             when b"0100011" =>
                 --Instruction is S-Type. Store type
                 --i only calculate adress (rs1+imm) send the data from rs2 to tmp and tell Dmem if word, halfword or byte
+                report"In Store Handeling";
                 rs1_adress <= rs1;
                 rs2_adress <= rs2;
                 rd_adress <=  rd;
