@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- Company: Technische Universität München
+-- Company: Technische UniversitÃ¤t MÃ¼nchen
 -- Engineer: Arun Prema Murugavel
 -- Matrikel Nummer: 03787979
 -- Email: arun.murugavel@tum.de
@@ -7,7 +7,7 @@
 -- Create Date: 07/02/2024 01:46:51 PM
 -- Design Name: Controller
 -- Module Name: controller - Behavioral
--- Project Name: RISC V 32
+-- Project Name: RISC V 32 RTL
 -- Target Devices: 
 -- Tool Versions: 
 -- Description: 
@@ -43,10 +43,8 @@ entity controller is
         jmp_flag         : in bit;
         store_flag       : in bit;
         load_flag        : in bit;
-        mem_flag         : in bit_vector(2 downto 0);
 
         -- FSM State Ouputs
-        
         -- Memory Read/Write Enable
         mem_read_en     : out bit;
         mem_write_en    : out bit;
@@ -90,25 +88,27 @@ begin
     end process;
 
     -- Next State Logic and Output Logic
-    process (state, next_state_flag, jmp_flag, store_flag, load_flag, mem_flag) -- Combinational
+    process (state, next_state_flag, jmp_flag, store_flag, load_flag) -- Combinational
     begin
+        -- Default assignments to avoid latches
+        mem_read_en <= '0';
+        mem_write_en <= '0';
+        reg_write_en <= '0';
+        instr_holder_en <= '0';
+        pc_ctrl_en <= '0';
+        instr_decode_flags_reset <= '0';
+        pc_jmp_flag <= '0';
+        
         case state is
             when FETCH =>
                 -- State Outputs in the FETCH state
-                mem_read_en <= '0';
-                mem_write_en <= '0';
-                reg_write_en <= '0';
-                pc_ctrl_en <= '0';
                 instr_holder_en <= '1';
-                instr_decode_flags_reset <= '0';
-                pc_jmp_flag <= '0';
                 
                 -- Next State
                 next_state <= DECODE_EXECUTE;
 
             when DECODE_EXECUTE =>          
                 -- General Outputs
-                instr_holder_en <= '0';
                 pc_ctrl_en <= '1';
                 reg_write_en <= '1';
                 
@@ -120,11 +120,7 @@ begin
                     instr_decode_flags_reset <= '1';
                 end if;
 
-            when MEM =>
-                -- General Output
-                reg_write_en <= '0';
-                pc_ctrl_en <= '0'; 
-                              
+            when MEM =>                              
                 if jmp_flag = '1' then
                     -- Next State
                     next_state <= FETCH;
