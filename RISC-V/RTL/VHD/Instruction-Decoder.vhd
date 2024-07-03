@@ -40,7 +40,8 @@ entity Instruction_Decoder is
           mem_flag : out bit_vector(2 downto 0);        --Tells the memory what it works with (byte000, halfword 001, word 010,byte unsigend 100, Halfword unsigned 101) Keeps with func3 conventions 
           f : out bit_vector(4 downto 0);               --what ADC should do and which input of mux it uses. f(4 downto 3) is Mux, f(2 downto 0) is func3
           a, b : out bit_vector(31 downto 0);           --Inputs for ADC
-          res : in bit
+          res : in bit;
+          reg_mux : out bit_vector(1 downto 0)          --the control signal for the mux infront of rd_data (00 is Alu, 01 is Dmem, 10 is PC, 11 is open)
      );
 end Instruction_Decoder;
 
@@ -84,6 +85,7 @@ architecture Behavioral of Instruction_Decoder is
          case opcode is
             when b"0010011" =>
                 --Instruction is I type. rs2 and Imm get put together. (Slli in it)
+                reg_mux <= b"00";   --Alu-output should be saved
                 --get Register inputs
                 rs1_adress <= rs1;
                 rs2_adress <= b"00_000";
@@ -105,10 +107,10 @@ architecture Behavioral of Instruction_Decoder is
                         f<= "11" & func3;
                     when "010"=>
                         --slti
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "011"=>
                         --sltiu
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "100"=>
                         --xori
                         f <= "10" & func3;
@@ -129,6 +131,7 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0110011" =>
                 --Instruction is R-Type add, etc. Need to look at func7 on how to handle rs2
+                reg_mux <= b"00";   --Alu-output should be saved
                 --get Register inputs
                 rs1_adress <= rs1;
                 rs2_adress <= rs2;
@@ -149,11 +152,11 @@ architecture Behavioral of Instruction_Decoder is
                         --shift left
                         f <= "11" & func3;
                     when "010"=>
-                        --slt
-                        f <= "11" & func3;
+                        --slt (set lower than)
+                        f <= "00" & func3;
                     when "011"=>
                         --sltu
-                        f <= "11" & func3;
+                        f <= "00" & func3;
                     when "100"=>
                         --xor
                         --adnere Imm länge. drüber schauen, extenden, absenden
@@ -177,7 +180,9 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------
             when b"0100011" =>
                 --Instruction is S-Type. Store type
+                --reg_mux not needed
                 --i only calculate adress (rs1+imm) send the data from rs2 to tmp and tell Dmem if word, halfword or byte
+                report"In Store Handeling";
                 rs1_adress <= rs1;
                 rs2_adress <= rs2;
                 rd_adress <=  rd;
@@ -215,6 +220,7 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0000011" =>
                 --Instruction is I-Type Load
+                reg_mux <= b"01";   --Dmem output should be saved
                 --i only calculate adress (rs1+imm), tell Dmem if word, halfword or byte and save data
                 rs1_adress <= rs1;
                 rd_adress <=  rd;
@@ -231,6 +237,7 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0110111" =>
                 --LUI
+                reg_mux <= b"00"; --Alu-output
                 --takes imm and places it in MSB
                 a(31 downto 12) <= Imm & rs2 & rs1 & func3;
                 a(11 downto 0) <= x"000";
@@ -242,7 +249,8 @@ architecture Behavioral of Instruction_Decoder is
 
 ---------------------             
             when b"0010111" =>
-                --AUIPC
+                --AUIPC 
+                reg_mux <= b"00"; --Alu-output
                 --get PC, add imm, save to rd
                 a(31 downto 12) <= Imm & rs2 & rs1 & func3;
                 a(11 downto 0) <= x"000";
@@ -255,6 +263,7 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"1101111" =>
                 --Jal, some special flags are needed
+                --reg_mux not needed
                 --bigger imm then jalr, need to tell controller that jmp is happening
                 --PC + imm
                 a(31 downto 16) <= x"0000";
@@ -272,6 +281,7 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------               
             when b"1100111" =>
                 --Jalr, some special Flags are needed
+                reg_mux <= b"10"; --PC needs to be saved
                 --set A to rs1 and B to imm(add). wait for EX-State. get new PC, and save to rd(Reg)
                 f <= "01" & func3; --has same func3 as add
                 rs1_adress <= rs1;
