@@ -213,7 +213,20 @@ begin
                             outToDMem(i) <= c(i) xor a_xor_b(i);
                             c(i+1) := a_and_b(i) or abc(i);
                         end loop;
-
+                    
+                    -- JAL/JALR --
+                    when "001" =>  -- custom funct3
+                        
+                        for i in 0 to 31 loop
+                            a_and_b(i) := a(i) and b(i);
+                            a_xor_b(i) := a(i) xor b(i);
+                            abc(i) := c(i) and a_xor_b(i);
+                            outToDMem(i) <= c(i) xor a_xor_b(i);
+                            c(i+1) := a_and_b(i) or abc(i);
+                        end loop;
+                    
+                        outToDMem(0) <= '0';
+                        
                     -- others --
                     when others =>
                         report("Error at Add!");

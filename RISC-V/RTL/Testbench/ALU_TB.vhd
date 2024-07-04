@@ -161,6 +161,13 @@ begin
         f_str <= "SUB  ";  -- Calculation of a+b = 2147483647 (no overflow, 2's complement)
         wait for 5 ns;
         
+        -- Test case: JAL/JALR --
+        a <= x"00_00_00_10";  -- -2147483648
+        b <= x"00_00_00_01";  -- -1
+        f <= "10001";
+        f_str <= "JAL. ";  -- Calculation of a+b = 2147483647 (no overflow, 2's complement)
+        wait for 5 ns;
+        
         -- Test case: SLL/SLLI --
         a <= b"0000_0000_0000_0000_0000_0000_0000_0001"; 
         b <= b"0000_0000_0000_0000_0000_0000_0000_0010";  
