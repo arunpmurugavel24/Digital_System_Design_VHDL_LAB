@@ -81,7 +81,7 @@ architecture Behavioral of RiscV_CPU_TLE is
     
     component pc_ctrl Port(
             enab_w, clk, res : in bit; --enables
-            imm : in bit_vector(15 downto 0);    --Address for a jump Instruction
+            imm : in bit_vector(12 downto 0);    --Address for a jump Instruction
             PC : out bit_vector(15 downto 0);    --needs to be same size as Pmem
             Alu_condition : in bit;              --Chosses if Pc is incremented by 1 or imm
             jmp_condition : in bit;              --If Jump Instructions is used, we need to use the Alu address
@@ -120,15 +120,15 @@ architecture Behavioral of RiscV_CPU_TLE is
         mem_read   : in  BIT;
         mem_write  : in  BIT;
         funct3     : in  BIT_VECTOR(2 downto 0);
-        address    : in  BIT_VECTOR(7 downto 0);
-        write_data : in  BIT_VECTOR(7 downto 0);
-        read_data  : out BIT_VECTOR(7 downto 0));
+        address    : in  BIT_VECTOR(31 downto 0);
+        write_data : in  BIT_VECTOR(31 downto 0);
+        read_data  : out BIT_VECTOR(31 downto 0));
     end component;
     
     component Program_memory Port(
         clk        : in  BIT;
         mem_read   : in  BIT;
-        addr       : in  BIT_VECTOR(31 downto 0);
+        addr       : in  BIT_VECTOR(15 downto 0);
         read_data  : out BIT_VECTOR(31 downto 0));
     end component;
     
@@ -179,10 +179,12 @@ architecture Behavioral of RiscV_CPU_TLE is
     
     --Mux Outputs
     signal mux_output : bit_vector(31 downto 0);
-    
+    signal PC_mux : bit_vector(31 downto 0);
     
     
 begin
+    --Bus size change
+    pc_mux <= x"0000" & PC;
     --Unit declaration
     ctrl1:       controller Port Map(
         clk => clk,
@@ -230,7 +232,7 @@ begin
     RegisterMux1:Mux3to1 Port Map(
             In0 => alu_output,
             In1 =>dmem_output,
-            In2 => PC, 
+            In2 => PC_mux, 
             output => mux_output,
             sel => reg_mux_sel); 
     
@@ -267,7 +269,7 @@ begin
     
     Pmem1:       program_memory Port Map(
           clk => clk,
-          mem_read => '1', --always read
+          mem_read => '1',              --Maybe change always read
           addr => PC,
           read_data => pmem_output);
     
@@ -277,6 +279,7 @@ begin
           res => res,
           Inst_input => pmem_output, 
           Inst_output => Instruction);
-    --no process needed as the TLE is only connection the signals(pathways)
+          
+    --no process needed as the TLE is only connecting the signals(pathways)
 
 end Behavioral;

@@ -7,8 +7,8 @@
 -- Project Name: RiscV Structural Model
 --
 -- Description: Gets a stable instruction as an Input. Splices it, gets data from Register
--- if needed, set Mux to Reg, tells controller how many States we need
--- and sets ALU inputs.
+--      if needed, set Mux to Reg, tells controller how many States we need
+--      and sets ALU inputs.
 --
 ----------------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ architecture Behavioral of Instruction_Decoder is
                 case func3 is
                     when "000" =>
                         --addi
-                        f <= "01" & func3;
+                        f <= "10" & func3;
                     when "001"=>
                         --slli
                         f<= "11" & func3;
@@ -95,7 +95,7 @@ architecture Behavioral of Instruction_Decoder is
                         f <= "00" & func3;
                     when "100"=>
                         --xori
-                        f <= "10" & func3;
+                        f <= "01" & func3;
                     when "101"=>
                         --srli is 101. srai is "111
                         if imm = b"000_0000" then
@@ -105,10 +105,10 @@ architecture Behavioral of Instruction_Decoder is
                         end if;
                     when "110"=>
                         --ori
-                        f <= "10" & "111";    
+                        f <= "01" & "110";    
                     when "111"=>
                         --andi
-                        f <= "10" & "111";
+                        f <= "01" & "111";
                     end case;
 ---------------------                
             when b"0110011" =>
@@ -131,7 +131,7 @@ architecture Behavioral of Instruction_Decoder is
                 case func3 is
                     when "000" =>
                         --add, sub
-                        f <= "01" & func3;
+                        f <= "10" & func3;
                         --sub wanted, need to invert b and add 1
                         if imm = b"010_0000" then
                             b <= bit_vector(unsigned(not(rs2_data)) + 1);
@@ -148,7 +148,7 @@ architecture Behavioral of Instruction_Decoder is
                     when "100"=>
                         --xor
                         --adnere Imm länge. drüber schauen, extenden, absenden
-                        f <= "10" & func3;
+                        f <= "01" & func3;
                     when "101"=>
                         --srl, sra is "111
                         if imm = b"000_0000" then
@@ -159,11 +159,11 @@ architecture Behavioral of Instruction_Decoder is
                     when "110"=>
                         --or
                         --adnere Imm länge. drüber schauen, extenden, absenden
-                        f <= "10" & "111";    
+                        f <= "01" & "111";    
                     when "111"=>
                         --and
                         --adnere Imm länge. drüber schauen, extenden, absenden
-                        f <= "10" & "111";
+                        f <= "01" & "111";
                     end case;
 ---------------------
             when b"0100011" =>
@@ -185,7 +185,7 @@ architecture Behavioral of Instruction_Decoder is
                     b(i) <= imm(6);
                 end LOOP;
                 b(11 downto 0) <= imm & rd;
-                f <= "01000";           --add, calculates the adress
+                f <= "10000";           --add, calculates the adress
                 mem_flag <= func3;
                 store_flag <= '1';       -- tells controller that mem-state is needed with wr-Mem
                 --next state should be EX and then Mem;
@@ -232,7 +232,7 @@ architecture Behavioral of Instruction_Decoder is
                     b(i) <= imm(6);
                 end LOOP;
                 b(11 downto 0) <= imm & rs2;
-                f <= "01000";           --add, calculates the adress
+                f <= "10000";           --add, calculates the adress
                 mem_flag <= func3;
                 load_flag <= '1';       -- tells controller that mem-state is needed with rd-Mem
                 --next state should be EX and then Mem;
@@ -250,7 +250,7 @@ architecture Behavioral of Instruction_Decoder is
                 a(11 downto 0) <= x"000";
                 rs2_adress <= b"0_0000";  --Register 0
                 b <= rs2_data;
-                f <= "01000"; --add
+                f <= "10000"; --add
                 rd_Adress <= rd;
                 --next state save the Alu result to rd
 
@@ -270,7 +270,7 @@ architecture Behavioral of Instruction_Decoder is
                 rs2_adress <= b"0_0000";  --Register 0
                 b(15 downto 0) <= PC;
                 b(31 downto 16) <= x"0000";
-                f <= "01000"; --add
+                f <= "10000"; --add
                 rd_Adress <= rd;
                 --next state save the Alu result to rd
 ---------------------                
@@ -292,7 +292,7 @@ architecture Behavioral of Instruction_Decoder is
                 b(19 downto 12) <= rs1 & func3;
                 b(11) <= rs2(0);
                 b(10 downto 1) <= imm(5 downto 0) & rs2(4 downto 1);
-                f <= "01000";           --add
+                f <= "10001";           --add
                 rd_adress <= rd;        --set adress for PC-saving
                 jmp_flag <= '1';        --controller needs to set mux for saving the next PC 
 ---------------------               
@@ -304,7 +304,7 @@ architecture Behavioral of Instruction_Decoder is
                
                 reg_mux <= b"10"; --PC needs to be saved
                 --set A to rs1 and B to imm(add). wait for EX-State. get new PC, and save to rd(Reg)
-                f <= "01" & func3; --has same func3 as add
+                f <= "10" & "001"; --has same func3 as add
                 rs1_adress <= rs1;
                 rd_adress <= rd;
                 a <= rs1_data;

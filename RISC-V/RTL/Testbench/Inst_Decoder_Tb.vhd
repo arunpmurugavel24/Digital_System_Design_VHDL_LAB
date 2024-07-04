@@ -1,3 +1,14 @@
+---------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: Tiemo Schmidt 
+-- 
+-- Create Date: 25.06.2024 17:34:11
+-- Module Name: Instruction-Decoder - Behavioral
+-- Project Name: RiscV Structural Model
+--
+-- Description: Testbench for originally only Instruction Decoder, but was extended to also Test Alu 
+--      to see if the Instruction with the same alu operation work correctly. 
+--
 ----------------------------------------------------------------------------------
 --TO TEST
 --LUI   DONE
@@ -95,6 +106,14 @@ architecture Behavioral of Inst_Decoder_Tb is
           wr_enab : in bit);
      end component;
      
+     component Alu Port(
+        f               : in bit_vector(4 downto 0);  -- 4:3 selects type of ALU (cmp/logic/add/shift); 2:0 is funct3
+        a               : in bit_vector(31 downto 0);  
+        b               : in bit_vector(31 downto 0);
+        outToDMem       : out bit_vector(31 downto 0);
+        ALU_condition   : out bit);
+    end component;
+     
      --ALU HERE
      
      --Signals
@@ -125,13 +144,19 @@ architecture Behavioral of Inst_Decoder_Tb is
     
     --SIGNALES FOR ALU HERE 
     --f, a, b are named like this and ALREADY EXIST. Others you need to create
+    signal alu_output : bit_vector(31 downto 0);
+    signal alu_condition : bit;
     
 begin
     UUT1 : Instruction_decoder Port Map(Inst, Open, rs1_adress, rs2_adress, rd3, rs1_data, rs2_data, PC, PC_imm, jmp_flag, store_flag, load_flag, mem_flag, f, a, b, reg_mux);
     Reg : RegisterFile PORT MAP(clk, res, rs1_adress, rs2_adress, rd_adress, rs1_data, rs2_data, rd_data, wr_enab);
     --ALU HERE
-    --ALU : 
-    
+    ALU1:        ALU Port Map(
+            f => f,
+            a => a,
+            b => b,
+            outToDMem => Alu_output,
+            ALU_condition => alu_condition);    
     --always true
     inst <= imm & rs2 & rs1 & func3 & rd & opcode;
     
@@ -538,7 +563,7 @@ begin
         func3 <= b"010";
         rd <= b"0_0000";                        --R0, because we dont have an alu in this tb
         rs1 <= bit_vector(TO_UNSIGNED(1, 5));   --R1 has 1
-        rs2 <=  bit_vector(TO_UNSIGNED(4, 5));  --R2 has 6
+        rs2 <=  bit_vector(TO_UNSIGNED(5, 5));  --R2 has 7
         Ergebnis <= 1;
         wait for 5ns;
         
@@ -563,7 +588,7 @@ begin
             wait for 5ns;
             --not equal
             rs1 <= bit_vector(TO_UNSIGNED(1, 5));   --value 1
-            rs1 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
+            rs2 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
             Ergebnis <= 0;
             wait for 5ns;
             
@@ -577,7 +602,7 @@ begin
             wait for 5ns;
             --not equal
             rs1 <= bit_vector(TO_UNSIGNED(1, 5));   --Value 1
-            rs1 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
+            rs2 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
             Ergebnis <= 1;
             wait for 5ns;
             
@@ -586,7 +611,7 @@ begin
         func3 <= b"100";
             --less than
             rs1 <= bit_vector(TO_UNSIGNED(1, 5));   --Value 1
-            rs1 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
+            rs2 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
             Ergebnis <= 1;
             wait for 5ns;
             --Equal
@@ -596,7 +621,7 @@ begin
             wait for 5ns;
             --more
             rs1 <= bit_vector(TO_UNSIGNED(5, 5));   --Value 7
-            rs1 <= bit_vector(TO_UNSIGNED(1, 5));   --Value 1
+            rs2 <= bit_vector(TO_UNSIGNED(1, 5));   --Value 1
             Ergebnis <= 0;
             wait for 5ns;
             
@@ -620,6 +645,7 @@ begin
             wait for 5ns;
             
         --BLTU(less than unsigned)
+        Operation <= "BLTU  ";
         func3 <= b"110";
             --greater
             rs1 <= bit_vector(to_unsigned(3, 5));   --Value -5(unsigend: 4.294.967.291)
@@ -638,6 +664,7 @@ begin
             wait for 5ns;
             
         --BGEU (greater than unsigned)
+        Operation <= "BGEU  ";
         func3 <= b"111";
             --greater
             rs1 <= bit_vector(to_unsigned(3, 5));   --Value -5(unsigend: 4.294.967.291)
@@ -659,13 +686,13 @@ begin
         --Test LUI and AUIPC
         --LUI
         operation <= "LUI   ";
-        opcode <= b"011_0011";
+        opcode <= b"011_0111";
         rd <= b"0_0000";                        --R0, because we dont have an alu in this tb
         func3 <= b"011";
         rs1 <= b"0_0101";           --R1 has 1
         rs2 <=  b"0_0110";          --R2 has 6
         imm <= b"010_1010";
-        Ergebnis <= 345643;         --is the 20bits from imm & rs2 & rs1 & func3, in 31 downto 12;
+        Ergebnis <= 1415753728;         --is the 20bits from imm & rs2 & rs1 & func3, in 31 downto 12;
         wait for 5ns;
         
         --AUIPC --like Lui, but adds PC on Top
@@ -677,7 +704,7 @@ begin
         rs1 <= b"0_0101";           --R1 has 1
         rs2 <=  b"0_0110";          --R2 has 6
         imm <= b"010_1010";
-        Ergebnis <= 345643+ 30;         --is the 20bits from imm & rs2 & rs1 & func3, in 31 downto 12;
+        Ergebnis <= 1415753728+ 30;         --is the 20bits from imm & rs2 & rs1 & func3, in 31 downto 12;
         wait for 5ns;
 -----------------------
         --Test JAL AND JALR       
@@ -688,13 +715,14 @@ begin
         rd <= b"0_0000";
         PC <=  bit_vector(TO_UNSIGNED(52, 16));
         --imm -20
-        rs2 <= b"1_0110";
+        rs2 <= b"0_1101";
         imm <= b"111_1111";
         func3 <= b"111";
         rs1 <= b"1_1111";
         Ergebnis <= 32;
         wait for 5ns;
-        
+        --11111111101111111011
+        --111111111011111110110
         --Case positiv jump
         operation <= "JAL   ";
         opcode <= b"110_1111";
@@ -705,50 +733,53 @@ begin
         imm <= b"000_0000";
         func3 <= b"000";
         rs1 <= b"0_0000";
-        Ergebnis <= 50;
+        Ergebnis <= 40;
         wait for 5ns;
 ----------
         --JALR          
         --TO Test: rs1 with LSB = 1 should come out as 0, positiv and negativ;
         --rs1 LSB = 1
         operation <= "JALR  ";
-        opcode <= b"110_1111";
+        opcode <= b"110_0111";
         rd <= b"0_0000";
         rs1 <= bit_vector(TO_UNSIGNED(31, 5));
         func3 <= b"000";
         --imm 20
         rs2 <= b"0_1010";
         imm <= b"000_0000";
-        --Adding 33+20 = 53, BUT LSB = 0, so 52
-        Ergebnis <= 52;
+        --Adding 33+10 = 43, BUT LSB = 0, so 52
+        Ergebnis <= 42;
+        wait for 5ns;
         
         --rs1 LSB = 1 AND imm LSB = 1;
         operation <= "JALR  ";
-        opcode <= b"110_1111";
+        opcode <= b"110_0111";
         rd <= b"0_0000";
         rs1 <= bit_vector(TO_UNSIGNED(31, 5));
         func3 <= b"000";
         --imm 21
         rs2 <= b"0_1011";
         imm <= b"000_0000";
-        --Adding 33+21 = 54, BUT LSB = 0, so 54
-        Ergebnis <= 54;
-        
+        --Adding 33+11 = 44, BUT LSB = 0, so 54
+        Ergebnis <= 44;
+        wait for 5ns;
+
         --positiv
         operation <= "JALR  ";
-        opcode <= b"110_1111";
+        opcode <= b"110_0111";
         rd <= b"0_0000";
-        rs1 <= bit_vector(TO_UNSIGNED(4, 5));
+        rs1 <= bit_vector(TO_UNSIGNED(5, 5));
         func3 <= b"000";
         --imm 20
         rs2 <= b"0_1010";
         imm <= b"000_0000";
-        --Adding 6+20 = 26
-        Ergebnis <= 26;
+        --Adding 7+10 = 17
+        Ergebnis <= 16;
+        wait for 5ns;
         
         --negativ
         operation <= "JALR  ";
-        opcode <= b"110_1111";
+        opcode <= b"110_0111";
         rd <= b"0_0000";
         rs1 <= bit_vector(TO_UNSIGNED(30, 5));
         func3 <= b"000";
@@ -779,7 +810,7 @@ begin
             --corner case shift b"1_1111"times
             rs1 <= bit_vector(TO_UNSIGNED(4, 5));
             rs2 <= b"1_1111"; --shift 31times 
-            Ergebnis <= -2147483648; --Or 0, not sure right now
+            Ergebnis <= -2147483648; -- -1 shifted 31(11111) times is -2**31-1
             wait for 5ns;
             
             --Normal case
@@ -821,7 +852,7 @@ begin
             --corner case shift b"1_1111"times
             rs1 <= bit_vector(TO_UNSIGNED(4, 5));
             rs2 <= b"1_1111"; --shift 31times 
-            Ergebnis <= 1; --Or 0, not sure right now
+            Ergebnis <= -1; -- -1 shifted right arithmetic stays -1
             wait for 5ns;
             
             --"Normal" case
@@ -875,7 +906,7 @@ begin
             --corner case shift b"1_1111"times
             rs1 <= bit_vector(TO_UNSIGNED(4, 5));
             rs2 <= bit_vector(TO_UNSIGNED(2, 5));   --Value 2**31, lowest 5 bits so 1_1111
-            Ergebnis <= 1; --Or 0, not sure right now
+            Ergebnis <= 1; --1
             wait for 5ns;
             
             --Normal case
@@ -897,7 +928,7 @@ begin
             --corner case shift b"1_1111"times
             rs1 <= bit_vector(TO_UNSIGNED(4, 5));
             rs2 <= bit_vector(TO_UNSIGNED(2, 5));   --Value 2**31, lowest 5 bits: so 1_1111
-            Ergebnis <= 1; --Or 0, not sure right now
+            Ergebnis <= -1; --Or 0, not sure right now
             wait for 5ns;
             
             --"Normal" case

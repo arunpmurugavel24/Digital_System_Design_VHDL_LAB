@@ -24,7 +24,7 @@ entity DataMemory is
         mem_read   : in  BIT;
         mem_write  : in  BIT;
         funct3     : in  BIT_VECTOR(2 downto 0);
-        address    : in  BIT_VECTOR(7 downto 0);
+        address    : in  BIT_VECTOR(31 downto 0);
         write_data : in  BIT_VECTOR(31 downto 0);
         read_data  : out BIT_VECTOR(31 downto 0)
     );
@@ -58,14 +58,25 @@ begin
     begin
         if mem_read = '1' then
             case funct3 is
+                when "100" => -- LBU (Load Byte)
+                    read_data(7 downto 0) <= memory(to_integer(unsigned(address)));
+                    for i in 31 downto 8 LOOP
+                        read_data(i) <= memory(to_integer(unsigned(address)))(7);
+                    end LOOP;                    
+                when "101" => -- LHU (Load Half-word)
+                    read_data(15 downto 0) <= memory(to_integer(unsigned(address) + 1)) & memory(to_integer(unsigned(address)));
+                    for i in 31 downto 16 LOOP
+                        read_data(i) <= memory(to_integer(unsigned(address)+1))(7);
+                    end LOOP;
+                when "010" => -- LW (Load Word)
+                    read_data <= memory(to_integer(unsigned(address))) & memory(to_integer(unsigned(address) + 1)) & memory(to_integer(unsigned(address) + 2)) & memory(to_integer(unsigned(address) + 3));
                 when "000" => -- LB (Load Byte)
                     read_data <= (others => '0');
                     read_data(7 downto 0) <= memory(to_integer(unsigned(address)));
                 when "001" => -- LH (Load Half-word)
                     read_data <= (others => '0');
                     read_data(15 downto 0) <= memory(to_integer(unsigned(address))) & memory(to_integer(unsigned(address) + 1));
-                when "010" => -- LW (Load Word)
-                    read_data <= memory(to_integer(unsigned(address))) & memory(to_integer(unsigned(address) + 1)) & memory(to_integer(unsigned(address) + 2)) & memory(to_integer(unsigned(address) + 3));
+ 
                 when others => read_data <= (others => '0');
             end case;
         else

@@ -23,7 +23,7 @@ entity Program_Memory is
     Port (
         clk        : in  BIT;
         mem_read   : in  BIT;
-        addr       : in  BIT_VECTOR(31 downto 0);
+        addr       : in  BIT_VECTOR(15 downto 0);
         read_data  : out BIT_VECTOR(31 downto 0)
     );
 end Program_Memory;
