@@ -24,14 +24,7 @@ entity DataMemory_tb is
 end DataMemory_tb;
 
 architecture Behavioral of DataMemory_tb is
-    signal clk        : BIT := '0';
-    signal mem_read   : BIT := '0';
-    signal mem_write  : BIT := '0';
-    signal funct3     : BIT_VECTOR(2 downto 0) := (others => '0');
-    signal address    : BIT_VECTOR(7 downto 0) := (others => '0');
-    signal write_data : BIT_VECTOR(7 downto 0) := (others => '0');
-    signal read_data  : BIT_VECTOR(7 downto 0);
-
+    -- Component declaration for the DataMemory
     component DataMemory
         Port (
             clk        : in  BIT;
@@ -39,12 +32,25 @@ architecture Behavioral of DataMemory_tb is
             mem_write  : in  BIT;
             funct3     : in  BIT_VECTOR(2 downto 0);
             address    : in  BIT_VECTOR(7 downto 0);
-            write_data : in  BIT_VECTOR(7 downto 0);
-            read_data  : out BIT_VECTOR(7 downto 0)
+            write_data : in  BIT_VECTOR(31 downto 0);
+            read_data  : out BIT_VECTOR(31 downto 0)
         );
     end component;
 
+    -- Signals to connect to the DataMemory
+    signal clk        : BIT := '0';
+    signal mem_read   : BIT := '0';
+    signal mem_write  : BIT := '0';
+    signal funct3     : BIT_VECTOR(2 downto 0) := (others => '0');
+    signal address    : BIT_VECTOR(7 downto 0) := (others => '0');
+    signal write_data : BIT_VECTOR(31 downto 0) := (others => '0');
+    signal read_data  : BIT_VECTOR(31 downto 0);
+
+    -- Clock period definition
+    constant clk_period : time := 10 ns;
+
 begin
+    -- Instantiate the Unit Under Test (UUT)
     uut: DataMemory
         Port map (
             clk => clk,
@@ -56,46 +62,67 @@ begin
             read_data => read_data
         );
 
-    -- Clock generation process
-    clk_process: process
+    -- Clock process definitions
+    clk_process :process
     begin
-        while True loop
-            clk <= '0';
-            wait for 10 ns;
-            clk <= '1';
-            wait for 10 ns;
-        end loop;
+        clk <= '0';
+        wait for clk_period/2;
+        clk <= '1';
+        wait for clk_period/2;
     end process;
 
     -- Stimulus process
     stim_proc: process
-    begin
-        -- Initialize
-        wait for 20 ns;
-        
-        -- Write data to address 0x10
+    begin        
+        -- Store Byte
         mem_write <= '1';
-        mem_read <= '0';
-        funct3 <= "000"; -- SB (Store Byte)
-        address <= "00010000"; -- 0x10
-        write_data <= "10101010"; -- 0xAA
-        wait for 20 ns;
-        
-        -- Disable write
+        funct3 <= "000";
+        address <= "00000001";
+        write_data <= x"000000AB"; -- Store 0xAB at address 1
+        wait for clk_period;
+
+        -- Store Half-word
+        funct3 <= "001";
+        address <= "00000010";
+        write_data <= x"0000CDEF"; -- Store 0xEF at address 2, 0xCD at address 3
+        wait for clk_period;
+
+        -- Store Word
+        funct3 <= "010";
+        address <= "00000100";
+        write_data <= x"12345678"; -- Store 0x78 at address 4, 0x56 at address 5, 0x34 at address 6, 0x12 at address 7
+        wait for clk_period;
+
+        -- Read Byte
         mem_write <= '0';
-        wait for 20 ns;
-        
-        -- Read data from address 0x10
         mem_read <= '1';
-        mem_write <= '0';
-        funct3 <= "000"; -- LB (Load Byte)
-        address <= "00010000"; -- 0x10
-        wait for 20 ns;
+        funct3 <= "000";
+        address <= "00000001"; -- Read from address 1
+        wait for clk_period;
         
-        -- Check read data
-        assert read_data = "10101010" report "Test failed: Read data does not match written data" severity error;
+        -- Check the result
+        assert read_data = x"000000AB"
+        report "Test failed for LB" severity error;
+
+        -- Read Half-word
+        funct3 <= "001";
+        address <= "00000010"; -- Read from address 2
+        wait for clk_period;
         
-        -- Finish simulation
+        -- Check the result
+        assert read_data = x"0000EFCD"
+        report "Test failed for LH" severity error;
+
+        -- Read Word
+        funct3 <= "010";
+        address <= "00000100"; -- Read from address 4
+        wait for clk_period;
+        
+        -- Check the result
+        assert read_data = x"12345678"
+        report "Test failed for LW" severity error;
+
+        -- End simulation
         wait;
     end process;
 
