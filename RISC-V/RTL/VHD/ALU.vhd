@@ -383,7 +383,7 @@ begin
                         end if;
                         
                         -- Stage 4: Shift by 8 bits --
-                        if shift_amt(2) = '1' then
+                        if shift_amt(3) = '1' then
                             if tmp_MSB = '1' then
                                 tmp_result_4 := tmp_result_3(23 downto 0) & b"1111_1111";
                             else 
@@ -394,7 +394,7 @@ begin
                         end if;
                         
                         -- Stage 5: Shift by 16 bits --
-                        if shift_amt(3) = '1' then
+                        if shift_amt(4) = '1' then
                             if tmp_MSB = '1' then
                                 tmp_result_5 := tmp_result_4(15 downto 0) & b"1111_1111_1111_1111";
                             else 
