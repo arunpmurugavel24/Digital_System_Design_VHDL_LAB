@@ -48,6 +48,7 @@ begin
         variable tmp_result_2   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_result_3   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_result_4   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
+        variable tmp_result_5   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_a          : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_MSB        : bit;  -- temporary single bit result for barrel shifter, the most significant bit (MSB)
         variable compare_or     : bit;  -- checks another variable bit by bit, if any bit is 1, then 
@@ -242,6 +243,7 @@ begin
                 tmp_result_2    := x"00_00_00_00";
                 tmp_result_3    := x"00_00_00_00";
                 tmp_result_4    := x"00_00_00_00";
+                tmp_result_5    := x"00_00_00_00";
                 shift_amt       := "00000";  -- default value
                 shift_amt       := b(4 downto 0);
                 case funct3 is 
@@ -258,31 +260,33 @@ begin
                         
                         -- Stage 2: Shift by 2 bits --
                         if shift_amt(1) = '1' then
-                            tmp_result_2 := a(29 downto 0) & "00";
+                            tmp_result_2 := tmp_result_1(29 downto 0) & "00";
                         else
                             tmp_result_2 := tmp_result_1;
                         end if;
                         
                         -- Stage 3: Shift by 4 bits --
                         if shift_amt(2) = '1' then
-                            tmp_result_3 := a(27 downto 0) & "0000";
+                            tmp_result_3 := tmp_result_2(27 downto 0) & "0000";
                         else
                             tmp_result_3 := tmp_result_2;
                         end if;
                         
-                        -- Stage 4: Shift by 16 bits --
+                        -- Stage 4: Shift by 8 bits --
                         if shift_amt(3) = '1' then
-                            tmp_result_4 := a(15 downto 0) & b"0000_0000_0000_0000";
+                            tmp_result_4 := tmp_result_3(23 downto 0) & b"0000_0000";
                         else
                             tmp_result_4 := tmp_result_3;
                         end if;
                         
-                        -- Stage 5: Shift by 32 bits --
-                        if shift_amt(4) = '1' then
-                            tmp_result_4 := x"00_00_00_00";
+                        -- Stage 5: Shift by 16 bits --
+                        if shift_amt(4) = '1' then 
+                            tmp_result_5 := tmp_result_4(15 downto 0) & b"0000_0000_0000_0000";
+                        else
+                            tmp_result_5 := tmp_result_4;
                         end if;
                         
-                        outToDMem <= tmp_result_4;
+                        outToDMem <= tmp_result_5;
                         
                     -- SRL/SRLI --
                     when "101" =>
@@ -302,33 +306,35 @@ begin
                         
                         -- Stage 2: Shift by 2 bits --
                         if shift_amt(1) = '1' then
-                            tmp_result_2 := tmp_a(29 downto 0) & "00";
+                            tmp_result_2 := tmp_result_1(29 downto 0) & "00";
                         else
                             tmp_result_2 := tmp_result_1;
                         end if;
                         
                         -- Stage 3: Shift by 4 bits --
                         if shift_amt(2) = '1' then
-                            tmp_result_3 := tmp_a(27 downto 0) & "0000";
+                            tmp_result_3 := tmp_result_2(27 downto 0) & "0000";
                         else
                             tmp_result_3 := tmp_result_2;
                         end if;
                         
-                        -- Stage 4: Shift by 16 bits --
+                        -- Stage 4: Shift by 8 bits --
                         if shift_amt(3) = '1' then
-                            tmp_result_4 := tmp_a(15 downto 0) & b"0000_0000_0000_0000";
+                            tmp_result_4 := tmp_result_3(23 downto 0) & b"0000_0000";
                         else
                             tmp_result_4 := tmp_result_3;
                         end if;
                         
-                        -- Stage 5: Shift by 32 bits --
-                        if shift_amt(4) = '1' then
-                            tmp_result_4 := x"00_00_00_00";
+                        -- Stage 5: Shift by 16 bits --
+                        if shift_amt(3) = '1' then
+                            tmp_result_5 := tmp_result_4(15 downto 0) & b"0000_0000_0000_0000";
+                        else
+                            tmp_result_5 := tmp_result_4;
                         end if;
                         
                         -- Final inverting of bits --
                         for i in 0 to 31 loop
-                            tmp_a(i) := tmp_result_4(31-i);
+                            tmp_a(i) := tmp_result_5(31-i);
                         end loop;
                         
                         outToDMem <= tmp_a; 
@@ -357,9 +363,9 @@ begin
                         -- Stage 2: Shift by 2 bits --
                         if shift_amt(1) = '1' then
                             if tmp_MSB = '1' then
-                                tmp_result_2 := tmp_a(29 downto 0) & "11";
+                                tmp_result_2 := tmp_result_1(29 downto 0) & "11";
                             else 
-                                tmp_result_2 := tmp_a(29 downto 0) & "00";
+                                tmp_result_2 := tmp_result_1(29 downto 0) & "00";
                             end if;
                         else
                             tmp_result_2 := tmp_result_1;
@@ -368,37 +374,39 @@ begin
                         -- Stage 3: Shift by 4 bits --
                         if shift_amt(2) = '1' then
                             if tmp_MSB = '1' then
-                                tmp_result_3 := tmp_a(27 downto 0) & "1111";
+                                tmp_result_3 := tmp_result_2(27 downto 0) & "1111";
                             else 
-                                tmp_result_3 := tmp_a(27 downto 0) & "0000";
+                                tmp_result_3 := tmp_result_2(27 downto 0) & "0000";
                             end if;
                         else
                             tmp_result_3 := tmp_result_2;
                         end if;
                         
-                        -- Stage 4: Shift by 16 bits --
-                        if shift_amt(3) = '1' then
+                        -- Stage 4: Shift by 8 bits --
+                        if shift_amt(2) = '1' then
                             if tmp_MSB = '1' then
-                                tmp_result_4 := tmp_a(15 downto 0) & b"1111_1111_1111_1111";
+                                tmp_result_4 := tmp_result_3(23 downto 0) & b"1111_1111";
                             else 
-                                tmp_result_4 := tmp_a(15 downto 0) & b"0000_0000_0000_0000";
+                                tmp_result_4 := tmp_result_3(23 downto 0) & b"0000_0000";
                             end if;
                         else
                             tmp_result_4 := tmp_result_3;
                         end if;
                         
-                        -- Stage 5: Shift by 32 bits --
-                        if shift_amt(4) = '1' then
+                        -- Stage 5: Shift by 16 bits --
+                        if shift_amt(3) = '1' then
                             if tmp_MSB = '1' then
-                                tmp_result_4 := x"ff_ff_ff_ff";
+                                tmp_result_5 := tmp_result_4(15 downto 0) & b"1111_1111_1111_1111";
                             else 
-                                tmp_result_4 := x"00_00_00_00";
+                                tmp_result_5 := tmp_result_4(15 downto 0) & b"0000_0000_0000_0000";
                             end if;
+                        else
+                            tmp_result_5 := tmp_result_4;
                         end if;
                         
                         -- Final inverting of bits --
                         for i in 0 to 31 loop
-                            tmp_a(i) := tmp_result_4(31-i);
+                            tmp_a(i) := tmp_result_5(31-i);
                         end loop;
                         
                         outToDMem <= tmp_a;
