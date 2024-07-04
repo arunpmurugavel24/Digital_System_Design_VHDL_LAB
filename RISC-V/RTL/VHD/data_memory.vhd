@@ -54,7 +54,7 @@ begin
         end if;
     end process;
 
-    process(clk, mem_read, funct3, address)
+    process(clk, mem_read, funct3, address, memory)
     begin
         if mem_read = '1' then
             case funct3 is
