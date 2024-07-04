@@ -65,9 +65,9 @@ begin
     clk_process :process
     begin
         clk <= '0';
-        wait for clk_period/2;
+        wait for 5 ns;
         clk <= '1';
-        wait for clk_period/2;
+        wait for 5 ns;
     end process;
 
     -- Stimulus process
@@ -78,26 +78,26 @@ begin
         funct3 <= "000";
         address <= "00000001";
         write_data <= x"000000AB"; -- Store 0xAB at address 1
-        wait for clk_period;
+        wait for 10 ns;
 
         -- Store Half-word
         funct3 <= "001";
         address <= "00000010";
         write_data <= x"0000CDEF"; -- Store 0xEF at address 2, 0xCD at address 3
-        wait for clk_period;
+        wait for 10 ns;
 
         -- Store Word
         funct3 <= "010";
         address <= "00000100";
         write_data <= x"12345678"; -- Store 0x78 at address 4, 0x56 at address 5, 0x34 at address 6, 0x12 at address 7
-        wait for clk_period;
+        wait for 10 ns;
 
         -- Read Byte
         mem_write <= '0';
         mem_read <= '1';
         funct3 <= "000";
         address <= "00000001"; -- Read from address 1
-        wait for clk_period;
+        wait for 10 ns;
         
         -- Check the result
         assert read_data = x"000000AB"
@@ -106,7 +106,7 @@ begin
         -- Read Half-word
         funct3 <= "001";
         address <= "00000010"; -- Read from address 2
-        wait for clk_period;
+        wait for 10 ns;
         
         -- Check the result
         assert read_data = x"0000EFCD"
@@ -115,7 +115,7 @@ begin
         -- Read Word
         funct3 <= "010";
         address <= "00000100"; -- Read from address 4
-        wait for clk_period;
+        wait for 10 ns;
         
         -- Check the result
         assert read_data = x"12345678"
