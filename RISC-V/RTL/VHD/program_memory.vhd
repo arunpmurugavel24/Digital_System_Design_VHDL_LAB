@@ -20,7 +20,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity Proram_Memory is
+entity Program_Memory is
     Port (
         clk        : in  BIT;
         mem_read   : in  BIT;

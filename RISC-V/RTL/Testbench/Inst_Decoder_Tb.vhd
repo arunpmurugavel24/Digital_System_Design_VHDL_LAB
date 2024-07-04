@@ -74,14 +74,12 @@ architecture Behavioral of Inst_Decoder_Tb is
           PC : in bit_vector(15 downto 0);              --depending on used Mem PC size will go
           PC_imm : out bit_vector(12 downto 0);         --the Branch imm is +-4KB(2^13), LSB is 0
           --flags : in bit_vector(no idea);             --Flags for jump, and FSM- for what to enable
-          next_state_flag : in bit;
           jmp_flag : out bit;                           --tells the controller that the mux for jmps need to be set
           store_flag : out bit;                         --tells controller for mem store access
           load_flag : out bit;                          --tells controller for mem load access
           mem_flag : out bit_vector(2 downto 0);        --Tells the memory what it works with (byte000, halfword 001, word 010,byte unsigend 100, Halfword unsigned 101) Keeps with func3 conventions 
           f : out bit_vector(4 downto 0);               --what ADC should do and which input of mux it uses. f(4 downto 3) is Mux, f(2 downto 0) is func3
           a, b : out bit_vector(31 downto 0);           --Inputs for ADC
-          res : in bit;
           reg_mux : out bit_vector(1 downto 0));
      end component;
      
@@ -107,8 +105,7 @@ architecture Behavioral of Inst_Decoder_Tb is
      signal a, b :  bit_vector(31 downto 0);        --Inputs for ADC
      signal clk, res, wr_enab :  bit;
      signal PC_imm : bit_vector(12 downto 0);         --the Branch imm is +-4KB(2^13), LSB is 0
-          --flags : in bit_vector(no idea);             --Flags for jump, and FSM- for what to enable
-     signal next_state_flag : bit;
+    --FLAGS
      signal jmp_flag : bit;                           --tells the controller that the mux for jmps need to be set
      signal store_flag : bit;                         --tells controller for mem store access
      signal load_flag : bit;                          --tells controller for mem load access
@@ -130,7 +127,7 @@ architecture Behavioral of Inst_Decoder_Tb is
     --f, a, b are named like this and ALREADY EXIST. Others you need to create
     
 begin
-    UUT1 : Instruction_decoder Port Map(Inst, Open, rs1_adress, rs2_adress, rd3, rs1_data, rs2_data, PC, PC_imm, next_state_flag, jmp_flag, store_flag, load_flag, mem_flag, f, a, b, res, reg_mux);
+    UUT1 : Instruction_decoder Port Map(Inst, Open, rs1_adress, rs2_adress, rd3, rs1_data, rs2_data, PC, PC_imm, jmp_flag, store_flag, load_flag, mem_flag, f, a, b, reg_mux);
     Reg : RegisterFile PORT MAP(clk, res, rs1_adress, rs2_adress, rd_adress, rs1_data, rs2_data, rd_data, wr_enab);
     --ALU HERE
     --ALU : 

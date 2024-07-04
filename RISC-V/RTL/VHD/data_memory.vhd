@@ -20,7 +20,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity DataMemory is
+entity Data_Memory is
     Port (
         clk        : in  BIT;
         mem_read   : in  BIT;
@@ -30,10 +30,10 @@ entity DataMemory is
         write_data : in  BIT_VECTOR(7 downto 0);
         read_data  : out BIT_VECTOR(7 downto 0)
     );
-end DataMemory;
+end Data_Memory;
 
 
-architecture Behavioral of DataMemory is
+architecture Behavioral of Data_Memory is
     type memory_type is array (0 to 255) of BIT_VECTOR(7 downto 0); -- 256 x 8-bit memory
     signal memory : memory_type := (others => (others => '0'));
 begin

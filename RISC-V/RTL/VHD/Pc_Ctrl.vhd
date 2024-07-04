@@ -28,7 +28,7 @@ use work.cpu_defs_pack.all;
 entity Pc_Ctrl is
     Port (enab_w, clk, res : in bit; --enables
             imm : in bit_vector(15 downto 0);    --Address for a jump Instruction
-            PC : out bit_vector(MemSize downto 0);    --Needs to be looked at if Adress room is big enough
+            PC : out bit_vector(15 downto 0);    --Needs to be looked at if Adress room is big enough
             Alu_condition : in bit;              --Chosses if Pc is incremented by 1 or imm
             jmp_condition : in bit;              --If Jump Instructions is used, we need to use the Alu address
             Alu_adress : in bit_vector(31 downto 0) 
@@ -36,7 +36,7 @@ entity Pc_Ctrl is
 end Pc_Ctrl;
 
 architecture Behavioral of Pc_Ctrl is
-    signal count : unsigned(MemSize downto 0);   --the Intern PC, unsigned, because there are no negativ adresses
+    signal count : unsigned(15 downto 0);   --the Intern PC, unsigned, because there are no negativ adresses
 begin
     --Always true
     PC <= bit_vector(count);

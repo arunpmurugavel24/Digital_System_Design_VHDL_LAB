@@ -33,14 +33,12 @@ entity Instruction_Decoder is
           PC : in bit_vector(15 downto 0);              --depending on used Mem PC size will go
           PC_imm : out bit_vector(12 downto 0);         --the Branch imm is +-4KB(2^13), LSB is 0
           --flags : in bit_vector(no idea);             --Flags for jump, and FSM- for what to enable
-          next_state_flag : in bit;
           jmp_flag : out bit;                           --tells the controller that the mux for jmps need to be set
           store_flag : out bit;                         --tells controller for mem store access
           load_flag : out bit;                          --tells controller for mem load access
           mem_flag : out bit_vector(2 downto 0);        --Tells the memory what it works with (byte000, halfword 001, word 010,byte unsigend 100, Halfword unsigned 101) Keeps with func3 conventions 
           f : out bit_vector(4 downto 0);               --what ADC should do and which input of mux it uses. f(4 downto 3) is Mux, f(2 downto 0) is func3
           a, b : out bit_vector(31 downto 0);           --Inputs for ADC
-          res : in bit;
           reg_mux : out bit_vector(1 downto 0)          --the control signal for the mux infront of rd_data (00 is Alu, 01 is Dmem, 10 is PC, 11 is open)
      );
 end Instruction_Decoder;
@@ -62,29 +60,19 @@ architecture Behavioral of Instruction_Decoder is
     rd <= inst(11 downto 7);
     opcode <= inst(6 downto 0);
     
-    process(Inst, res, PC, rs1_data, rs2_data, imm, rs2, rs1, func3, rd, opcode, next_state_flag) --Needs all Inputs, otherwise it wont work  sad smiley(T_T)
-    begin
-    --if clk = '1' AND clk'event then                                       --NOT CLK AS THERE IS NO GREY IN INSTRUCTION DECODER
-
-        -- RESET FLAGS
-        if res = '1' then --sets Flags back after half a clockzykle
-            --all Flags to 0
-            jmp_flag <= '0';
-            mem_flag <= b"000";
-            load_flag <= '0';
-            store_flag <= '0';
-            --all adress pointers to 
-            rd_adress <= b"0_0000";
-            rs1_adress <= b"0_0000";
-            rs2_adress <= b"0_0000";
-
-        end if;
-        
+    process(Inst, PC, rs1_data, rs2_data, imm, rs2, rs1, func3, rd, opcode) --Needs all Inputs, otherwise it wont work  sad smiley(T_T)
+    begin      
                 
         --Depending on Instruction Typ, different things need to be done
          case opcode is
             when b"0010011" =>
                 --Instruction is I type. rs2 and Imm get put together. (Slli in it)
+                --No flags needed
+                jmp_flag <= '0';
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
+                
                 reg_mux <= b"00";   --Alu-output should be saved
                 --get Register inputs
                 rs1_adress <= rs1;
@@ -131,6 +119,12 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0110011" =>
                 --Instruction is R-Type add, etc. Need to look at func7 on how to handle rs2
+                --No Flags needed
+                jmp_flag <= '0';
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
+                
                 reg_mux <= b"00";   --Alu-output should be saved
                 --get Register inputs
                 rs1_adress <= rs1;
@@ -181,6 +175,10 @@ architecture Behavioral of Instruction_Decoder is
             when b"0100011" =>
                 --Instruction is S-Type. Store type
                 --reg_mux not needed
+                --mem and store flag needed other arent
+                jmp_flag <= '0';
+                load_flag <= '0';
+                
                 --i only calculate adress (rs1+imm) send the data from rs2 to tmp and tell Dmem if word, halfword or byte
                 report"In Store Handeling";
                 rs1_adress <= rs1;
@@ -200,6 +198,12 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------
             when b"1100011" =>
                 --Instruction is B-Type. Branch
+                --Branch is not jmp. so no flags needed
+                jmp_flag <= '0';
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
+                
                 --we need to compare and then jump the immediatly
                 f <= "00" & func3;
                 --get data from Reg
@@ -220,6 +224,10 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0000011" =>
                 --Instruction is I-Type Load
+                --Load and mem flag needed, others arent
+                jmp_flag <= '0';
+                store_flag <= '0';
+                
                 reg_mux <= b"01";   --Dmem output should be saved
                 --i only calculate adress (rs1+imm), tell Dmem if word, halfword or byte and save data
                 rs1_adress <= rs1;
@@ -237,6 +245,11 @@ architecture Behavioral of Instruction_Decoder is
 ---------------------                
             when b"0110111" =>
                 --LUI
+                --No flags needed
+                jmp_flag <= '0';
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
                 reg_mux <= b"00"; --Alu-output
                 --takes imm and places it in MSB
                 a(31 downto 12) <= Imm & rs2 & rs1 & func3;
@@ -249,7 +262,13 @@ architecture Behavioral of Instruction_Decoder is
 
 ---------------------             
             when b"0010111" =>
-                --AUIPC 
+                --AUIPC
+                --no flags needed
+                jmp_flag <= '0';
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0'; 
+                
                 reg_mux <= b"00"; --Alu-output
                 --get PC, add imm, save to rd
                 a(31 downto 12) <= Imm & rs2 & rs1 & func3;
@@ -262,7 +281,11 @@ architecture Behavioral of Instruction_Decoder is
                 --next state save the Alu result to rd
 ---------------------                
             when b"1101111" =>
-                --Jal, some special flags are needed
+                --Jump Flag needed others arent
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
+                
                 --reg_mux not needed
                 --bigger imm then jalr, need to tell controller that jmp is happening
                 --PC + imm
@@ -280,7 +303,11 @@ architecture Behavioral of Instruction_Decoder is
                 jmp_flag <= '1';        --controller needs to set mux for saving the next PC 
 ---------------------               
             when b"1100111" =>
-                --Jalr, some special Flags are needed
+                --Jump Flag needed others arent
+                mem_flag <= b"000";
+                load_flag <= '0';
+                store_flag <= '0';
+               
                 reg_mux <= b"10"; --PC needs to be saved
                 --set A to rs1 and B to imm(add). wait for EX-State. get new PC, and save to rd(Reg)
                 f <= "01" & func3; --has same func3 as add
@@ -298,6 +325,5 @@ architecture Behavioral of Instruction_Decoder is
                 --Error
                 report "Error Instruction-Decoding at Op-code Case" severity error;
         end case;
-    --end if;
     end process;
 end Behavioral;
