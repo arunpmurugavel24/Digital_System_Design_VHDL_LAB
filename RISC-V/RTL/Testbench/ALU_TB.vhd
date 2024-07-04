@@ -1,16 +1,12 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- University: Technical University of Munich
+-- Student: Hian Zing Voon
 -- 
 -- Create Date: 03.07.2024 15:07:33
--- Design Name: 
+-- Design Name: ALU_TB
 -- Module Name: ALU_TB - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
+-- Project Name: ALU Test bench
+-- Description: A test bench meant to check every single instruction set (if needed) of the arithmetic logic unit (ALU).
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
@@ -23,17 +19,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity ALU_TB is
---  Port ( );
+--  Port is empty, as there are no inputs into TLE and no outputs from TLE
 end ALU_TB;
 
 architecture Behavioral of ALU_TB is
@@ -78,8 +66,8 @@ begin
         -- Initalise inputs --
         f       <= "00000";
         f_str   <= "Init ";
-        a       <= x"00_00_00_00";
-        b       <= b"0000_0000_0000_0000_0000_0000_0000_0001";  -- b: binary; x: hexadecimal
+        a       <= x"00_00_00_00";  -- x: hexadecimal
+        b       <= b"0000_0000_0000_0000_0000_0000_0000_0001";  -- b: binary
         wait for 5 ns;
         
         -- Test case: SLT/SLTI --
@@ -158,6 +146,42 @@ begin
         f <= "01111";
         f_str <= "AND. ";
         wait for 5 ns;
+        
+        -- Test case: ADD/ADDI/SUB --
+        a <= x"7f_ff_ff_ff";  -- 2147483647
+        b <= x"00_00_00_1f";  -- 31
+        f <= "10000";
+        f_str <= "ADD. ";  -- Calculation of a+b = -2147483618 (no overflow)
+        wait for 5 ns;
+        
+        -- Test case: SUB --
+        a <= x"80_00_00_00";  -- -2147483648
+        b <= x"ff_ff_ff_ff";  -- -1
+        f <= "10000";
+        f_str <= "SUB  ";  -- Calculation of a+b = 2147483647 (no overflow, 2's complement)
+        wait for 5 ns;
+        
+        -- Test case: SLL/SLLI --
+        a <= b"0000_0000_0000_0000_0000_0000_0000_0001"; 
+        b <= b"0000_0000_0000_0000_0000_0000_0000_0010";  
+        f <= "11001";
+        f_str <= "SLL. "; 
+        wait for 5 ns;
+        
+        -- Test case: SRL-SRLI --
+        a <= b"0000_0000_0000_0000_0000_0000_0000_0010"; 
+        b <= b"0000_0000_0000_0000_0000_0000_0000_0001";  
+        f <= "11101";
+        f_str <= "SRL. "; 
+        wait for 5 ns;
+        
+        -- Test case: SRA/SRAI --
+        a <= b"1000_0000_0000_0000_0000_0000_0000_0010"; 
+        b <= b"0000_0000_0000_0000_0000_0000_0000_0100";  
+        f <= "11111";
+        f_str <= "SRA. "; 
+        wait for 5 ns;
+        
         
     end process;
 end Behavioral;
