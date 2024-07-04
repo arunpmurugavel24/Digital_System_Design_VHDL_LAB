@@ -1,21 +1,13 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Tiemo Schmidt
 -- 
 -- Create Date: 19.06.2024 12:55:36
--- Design Name: 
 -- Module Name: Register - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Project Name: RiscV-RTL Model
+--
+-- Description: the Register with 31 cells. Each Cell is 32Bit big. Read works asynchron.
+--      Write works synchron to the clk. Reg0 is hardwired to 0;
 ----------------------------------------------------------------------------------
 
 

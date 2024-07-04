@@ -42,7 +42,7 @@ architecture Behavioral of RiscV_CPU_TLE is
         clk              : in bit;
         reset            : in bit;
         -- FSM Inputs
-        next_state_flag  : in bit;
+        --next_state_flag  : in bit;
         jmp_flag         : in bit;
         store_flag       : in bit;
         load_flag        : in bit;
@@ -115,7 +115,7 @@ architecture Behavioral of RiscV_CPU_TLE is
           wr_enab : in bit);
     end component;
     
-    component Data_Memory Port (
+    component DataMemory Port (
         clk        : in  BIT;
         mem_read   : in  BIT;
         mem_write  : in  BIT;
@@ -140,39 +140,143 @@ architecture Behavioral of RiscV_CPU_TLE is
     
     --SIGNALS
     --controller Outputs
+    signal dmem_read_enab : bit;
+    signal dmem_write_enab: bit;
+    signal reg_write_enab: bit;
+    signal inst_hold_enab : bit;
+    signal pc_ctrl_enab : bit;
+    signal pc_jmp_flag : bit;
+    
     
     --Inst_decoder Outputs
+    signal rd_adress, rs1_adress, rs2_adress : bit_vector(4 downto 0);
+    signal a, b : bit_vector(31 downto 0);
+    signal f : bit_vector(4 downto 0);
+    signal pc_imm : bit_vector(12 downto 0);
+    signal reg_mux_sel : bit_vector(1 downto 0);
+    signal d3 : bit_vector(31 downto 0);
+    signal jmp_flag, store_flag, load_flag : bit;
+    signal mem_flag : bit_vector(2 downto 0);
     
     --pc_ctrl Outputs
+    signal PC : bit_vector(15 downto 0);
     
     --Alu Outputs
+    signal alu_output : bit_vector(31 downto 0);
+    signal alu_condition : bit;
     
     --Dmem outputs
+    signal dmem_output : bit_vector(31 downto 0);
     
     --Pmem outputs
+    signal pmem_output : bit_vector(31 downto 0);
     
     --RF outputs
+    signal rs1_data, rs2_data : bit_vector(31 downto 0);
     
     --int_holder Outputs
+    signal Instruction : bit_vector(31 downto 0);
     
     --Mux Outputs
+    signal mux_output : bit_vector(31 downto 0);
     
     
     
 begin
     --Unit declaration
-    ctrl:       controller Port Map();
-    ID:         instruction_decoder Port Map();
-    inst_hold:  inst_holder Port Map();
-    ALU:        ALU Port Map();
-    RegisterMux:Mux3to1 Port Map(); 
-    pc_ctrl:    pc_ctrl Port Map();
+    ctrl1:       controller Port Map(
+        clk => clk,
+        reset => res,
+        --next_state_flag => open,
+        jmp_flag => jmp_flag,
+        store_flag => store_flag,
+        load_flag => load_flag,
+        mem_read_en => dmem_read_enab,
+        mem_write_en => dmem_write_enab,
+        reg_write_en => reg_write_enab,
+        instr_holder_en => inst_hold_enab,
+        pc_ctrl_en => pc_ctrl_enab,
+        instr_decode_flags_reset => Open,
+        pc_jmp_flag => pc_jmp_flag);
+    
+    ID1:         instruction_decoder Port Map(
+          Inst => Instruction,
+          rd_adress => rd_adress,
+          rs1_adress => rs1_Adress,
+          rs2_adress => rs2_adress,
+          rd3 => d3,
+          rs1_data => rs1_data,
+          rs2_data => rs2_data,
+          PC => PC,
+          PC_imm => PC_imm,
+          jmp_flag => jmp_flag,
+          store_flag => store_flag,
+          load_flag => load_flag,
+          mem_flag => mem_flag,
+          f => f,
+          a => a,
+          b => b,
+          reg_mux => reg_mux_sel);
+          
+
+          
+    ALU1:        ALU Port Map(
+            f => f,
+            a => a,
+            b => b,
+            outToDMem => Alu_output,
+            ALU_condition => alu_condition);
+    
+    RegisterMux1:Mux3to1 Port Map(
+            In0 => alu_output,
+            In1 =>dmem_output,
+            In2 => PC, 
+            output => mux_output,
+            sel => reg_mux_sel); 
+    
+    pc_ctrl1:    pc_ctrl Port Map(
+            enab_w => pc_ctrl_enab,
+            clk => clk, 
+            res => res,
+            imm => pc_imm,
+            PC => PC,
+            Alu_condition => alu_condition, 
+            jmp_condition => pc_jmp_flag, 
+            Alu_adress => alu_output); 
     
     --Mem units
-    RF:         registerfile Port Map();
-    Dmem:       data_memory Port Map();
-    Pmem:       program_memory Port Map();
+    RF:         registerfile Port Map(
+          clk => clk,
+          res => res,
+          rd1_addr => rs1_adress,
+          rd2_addr => rs2_adress,
+          wr_addr => rd_adress, 
+          rd1_data => rs1_data, 
+          rd2_data => rs2_data, 
+          wr_data => mux_output, 
+          wr_enab => reg_write_enab); 
     
+    Dmem1:       datamemory Port Map(
+          clk => clk,
+          mem_read => dmem_read_enab,
+          mem_write => dmem_write_enab,
+          funct3 => mem_flag,
+          address => alu_output,
+          write_data => d3,
+          read_data => dmem_output);
+    
+    Pmem1:       program_memory Port Map(
+          clk => clk,
+          mem_read => '1', --always read
+          addr => PC,
+          read_data => pmem_output);
+    
+    inst_hold1:  inst_holder Port Map(
+          enab => inst_hold_enab, 
+          clk => clk, 
+          res => res,
+          Inst_input => pmem_output, 
+          Inst_output => Instruction);
     --no process needed as the TLE is only connection the signals(pathways)
 
 end Behavioral;
