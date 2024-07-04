@@ -26,10 +26,10 @@ use WORK.conversion_pack.ALL;
 entity ALU is
     port (
         f               : in bit_vector(4 downto 0);  -- 4:3 selects type of ALU (cmp/logic/add/shift); 2:0 is funct3
-        a               : in bit_vector(31 downto 0);  
-        b               : in bit_vector(31 downto 0);
-        outToDMem       : out bit_vector(31 downto 0);
-        ALU_condition   : out bit
+        a               : in bit_vector(31 downto 0);  -- input of 'a'
+        b               : in bit_vector(31 downto 0);  -- input of 'b'
+        outToDMem       : out bit_vector(31 downto 0);  -- output of ALU to DMEM
+        ALU_condition   : out bit  -- output as a flag from ALU for case 'cmp' to pc_ctrl
     );
 end ALU;
 
@@ -41,9 +41,6 @@ begin
     process (f, a, b)
         variable funct3         : bit_vector(2 downto 0);  -- 2:0 of f
         variable ALU_case       : bit_vector(1 downto 0);  -- 4:3 of f
---        variable f2             : bit_vector(4 downto 0) := "00010";  -- debug
---        variable a2             : bit_vector(31 downto 0) := "00000000000000000000000000000000";  -- debug
---        variable b2             : bit_vector (31 downto 0) := "10000000000000000000000000000000";  -- debug
         variable tmp_result_1   : bit_vector(31 downto 0);  -- temporary result for BEQ, BNE and barrel shifter
         variable tmp_result_2   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_result_3   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
@@ -51,7 +48,7 @@ begin
         variable tmp_result_5   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_a          : bit_vector(31 downto 0);  -- temporary result for barrel shifter
         variable tmp_MSB        : bit;  -- temporary single bit result for barrel shifter, the most significant bit (MSB)
-        variable compare_or     : bit;  -- checks another variable bit by bit, if any bit is 1, then 
+        variable compare_or     : bit;  -- checks another variable bit by bit, if any bit is 1, then 1
         variable a_and_b        : bit_vector(31 downto 0);  -- for add/addi/sub operations
         variable a_xor_b        : bit_vector(31 downto 0);  -- for add/addi/sub operations
         variable abc            : bit_vector(31 downto 0);   -- for add/addi/sub operations
@@ -62,9 +59,7 @@ begin
     
         ALU_case := f(4 downto 3); -- 4:3 of f 
         funct3 := f(2 downto 0);  -- 2:0 of f
---        ALU_case := f2(4 downto 3);  -- debug
---        funct3 := f2(2 downto 0);  -- debug
-        compare_or := '0';
+        compare_or := '0';  -- default of '0'
         ALU_condition_result <= '0';
         
         case ALU_case is
@@ -96,7 +91,6 @@ begin
                     -- BEQ --
                     when "000" =>
                         tmp_result_1 := a XOR b;
-    --                    tmp_result := a2 XOR b2;  -- debug
                         
                         for i in tmp_result_1'range loop
                             compare_or := compare_or OR tmp_result_1(i);
@@ -105,11 +99,11 @@ begin
                             if compare_or = '0' then 
                                 ALU_condition_result <= '1';  -- BEQ (branch if equal)
                                 outToDMem <= x"00_00_00_01";
-    --                            report("HEEEEEELO: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug
+--                                report("Debug: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug
                             else
                                 ALU_condition_result <= '0';  
                                 outToDMem <= x"00_00_00_00";
-    --                            report("HEEEEEELO: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug
+--                                report("Debug: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug
                             end if;
                             
                     -- BNE --
@@ -122,9 +116,11 @@ begin
                             if compare_or = '1' then
                                 ALU_condition_result <= '1';
                                 outToDMem <= x"00_00_00_01";
+--                                report("Debug: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug                         
                             else 
                                 ALU_condition_result <= '0';
                                 outToDMem <= x"00_00_00_00";
+--                                report("Debug: compare_or: " & bit'IMAGE(compare_or) & "; ALU_condition: " & bitToString(ALU_condition_result));  -- debug                                
                             end if;
                             
                     -- BLT --
@@ -289,6 +285,7 @@ begin
                         outToDMem <= tmp_result_5;
                         
                     -- SRL/SRLI --
+                    -- first invert, then left shift, then invert again 
                     when "101" =>
                         tmp_a := x"00_00_00_00";
                         
@@ -340,6 +337,7 @@ begin
                         outToDMem <= tmp_a; 
                         
                     -- SRA/SRAI --
+                    -- first invert, then left shift, then invert again 
                     when "111" =>
                         tmp_a := x"00_00_00_00";
                         tmp_MSB := a(31);
