@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_controller_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="tb_controller" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="41.381 ns"></ZoomEndTime>
+      <Cursor1Time time="34.472 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="212"></NameColumnWidth>
+      <ValueColumnWidth column_width="98"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="15" />
+   <wvobject fp_name="/tb_controller/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/next_state_flag" type="logic">
+      <obj_property name="ElementShortName">next_state_flag</obj_property>
+      <obj_property name="ObjectShortName">next_state_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/jmp_flag" type="logic">
+      <obj_property name="ElementShortName">jmp_flag</obj_property>
+      <obj_property name="ObjectShortName">jmp_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/store_flag" type="logic">
+      <obj_property name="ElementShortName">store_flag</obj_property>
+      <obj_property name="ObjectShortName">store_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/load_flag" type="logic">
+      <obj_property name="ElementShortName">load_flag</obj_property>
+      <obj_property name="ObjectShortName">load_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/mem_read_en" type="logic">
+      <obj_property name="ElementShortName">mem_read_en</obj_property>
+      <obj_property name="ObjectShortName">mem_read_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/mem_write_en" type="logic">
+      <obj_property name="ElementShortName">mem_write_en</obj_property>
+      <obj_property name="ObjectShortName">mem_write_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/reg_write_en" type="logic">
+      <obj_property name="ElementShortName">reg_write_en</obj_property>
+      <obj_property name="ObjectShortName">reg_write_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/instr_holder_en" type="logic">
+      <obj_property name="ElementShortName">instr_holder_en</obj_property>
+      <obj_property name="ObjectShortName">instr_holder_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/pc_ctrl_en" type="logic">
+      <obj_property name="ElementShortName">pc_ctrl_en</obj_property>
+      <obj_property name="ObjectShortName">pc_ctrl_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/instr_decode_flags_reset" type="logic">
+      <obj_property name="ElementShortName">instr_decode_flags_reset</obj_property>
+      <obj_property name="ObjectShortName">instr_decode_flags_reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/pc_jmp_flag" type="logic">
+      <obj_property name="ElementShortName">pc_jmp_flag</obj_property>
+      <obj_property name="ObjectShortName">pc_jmp_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/uut/state" type="other">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/uut/next_state" type="other">
+      <obj_property name="ElementShortName">next_state</obj_property>
+      <obj_property name="ObjectShortName">next_state</obj_property>
+   </wvobject>
+</wave_config>
