@@ -5,8 +5,8 @@
 -- Create Date: 28.06.2024 14:08:45
 -- Design Name: ALU
 -- Module Name: ALU - Behavioral
--- Project Name: 
--- Description: 
+-- Project Name: ALU
+-- Description: Arithmetic logic unit (ALU) takes input to execute arithmetic and logical operations like ADD, SUB and BLT.
 -- 
 -- Revision:
 -- Revision 0.01 - File Created
@@ -34,32 +34,28 @@ entity ALU is
 end ALU;
 
 architecture Behavioral of ALU is
-    signal ALU_condition_result : bit; -- debug
---    signal a2 : bit_vector(31 downto 0);
---    signal b2 : bit_vector(31 downto 0);
+    signal ALU_condition_result : bit;  -- temporarily holds the value of ALU_condition
     
 begin 
-    ALU_condition <= ALU_condition_result;
+    ALU_condition <= ALU_condition_result;  -- takes the value of ALU_condition_result and sets it as output whenever it changes
     process (f, a, b)
         variable funct3         : bit_vector(2 downto 0);  -- 2:0 of f
         variable ALU_case       : bit_vector(1 downto 0);  -- 4:3 of f
 --        variable f2             : bit_vector(4 downto 0) := "00010";  -- debug
 --        variable a2             : bit_vector(31 downto 0) := "00000000000000000000000000000000";  -- debug
 --        variable b2             : bit_vector (31 downto 0) := "10000000000000000000000000000000";  -- debug
-        variable cmp_flag       : bit;  -- 0 or 1 
-        variable tmp_result_1   : bit_vector(31 downto 0);
-        variable tmp_result_2   : bit_vector(31 downto 0);
-        variable tmp_result_3   : bit_vector(31 downto 0);
-        variable tmp_result_4   : bit_vector(31 downto 0);
-        variable tmp_a          : bit_vector(31 downto 0);
-        variable tmp_MSB        : bit;
+        variable tmp_result_1   : bit_vector(31 downto 0);  -- temporary result for BEQ, BNE and barrel shifter
+        variable tmp_result_2   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
+        variable tmp_result_3   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
+        variable tmp_result_4   : bit_vector(31 downto 0);  -- temporary result for barrel shifter
+        variable tmp_a          : bit_vector(31 downto 0);  -- temporary result for barrel shifter
+        variable tmp_MSB        : bit;  -- temporary single bit result for barrel shifter, the most significant bit (MSB)
         variable compare_or     : bit;  -- checks another variable bit by bit, if any bit is 1, then 
-        variable a_and_b        : bit_vector(31 downto 0);
-        variable a_xor_b        : bit_vector(31 downto 0);
-        variable abc            : bit_vector(31 downto 0); 
-        variable c              : bit_vector(32 downto 0);
+        variable a_and_b        : bit_vector(31 downto 0);  -- for add/addi/sub operations
+        variable a_xor_b        : bit_vector(31 downto 0);  -- for add/addi/sub operations
+        variable abc            : bit_vector(31 downto 0);   -- for add/addi/sub operations
+        variable c              : bit_vector(32 downto 0);  -- for add/addi/sub operations
         variable shift_amt      : bit_vector(4 downto 0);  -- shift amount
-        constant padding        : bit_vector(31 downto 0) := (others => '0');
         
     begin
     
@@ -162,7 +158,7 @@ begin
                     
                     -- BGEU --
                     when "111" =>
-                        if signed(a) >= signed (b) then
+                        if unsigned(a) >= unsigned (b) then
                             ALU_condition_result <= '1';
                             outToDMem <= x"00_00_00_01";
                         else 
