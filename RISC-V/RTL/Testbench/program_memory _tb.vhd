@@ -27,7 +27,10 @@ architecture Behavioral of ProgramMemory_tb is
     signal mem_read   : BIT := '0';
     signal addr       : BIT_VECTOR(31 downto 0) := (others => '0');
     signal read_data  : BIT_VECTOR(31 downto 0);
-
+    type memory_type is array (0 to 255) of BIT_VECTOR(31 downto 0); -- 256 x 32-bit memory
+    signal memory : memory_type := (others => (others => '0'));
+    
+    
     component Program_Memory
         Port (
             clk        : in  BIT;
@@ -64,8 +67,8 @@ begin
         wait for 20 ns;
         
         -- Write initial data to the program memory for testing (not part of typical testbench but needed for this example)
-        uut.memory(16) <= "00000000000000000000000010101010"; -- Address 0x10
-        uut.memory(32) <= "00000000000000000000000011001100"; -- Address 0x20
+        memory(16) <= "00000000000000000000000010101010"; -- Address 0x10
+        memory(32) <= "00000000000000000000000011001100"; -- Address 0x20
         
         -- Read data from address 0x10
         mem_read <= '1';
