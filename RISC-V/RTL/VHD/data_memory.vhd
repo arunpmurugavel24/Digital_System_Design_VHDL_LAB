@@ -16,8 +16,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.numeric_bit.ALL;
 
 entity DataMemory is
     Port (
@@ -55,7 +54,7 @@ begin
         end if;
     end process;
 
-    process(clk, mem_read, funct3, address)
+    process(clk, mem_read, funct3, address, memory)
     begin
         if mem_read = '1' then
             case funct3 is

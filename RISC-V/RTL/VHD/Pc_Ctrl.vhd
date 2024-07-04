@@ -1,21 +1,14 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Tiemo Schmidt
 -- 
--- Create Date: 25.06.2024 19:41:54
--- Design Name: 
--- Module Name: Pc_Ctrl - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Create Date: 04.07.2024 10:52:56
+-- Module Name: pc_Ctrl - Behavioral
+-- Project Name: RiscV Structural Model
+--
+-- Description: PC_ctrl. is responsible for Incrementing the PC with either 4 or the imm 
+--      send by the Instruction decoder. It can also save the Adress calculated in the ALU
+--      as the new PC.
 ----------------------------------------------------------------------------------
 
 

@@ -39,7 +39,7 @@ entity controller is
         reset            : in bit;
         
         -- FSM Inputs
-        next_state_flag  : in bit;
+        --next_state_flag  : in bit;
         jmp_flag         : in bit;
         store_flag       : in bit;
         load_flag        : in bit;
@@ -86,7 +86,7 @@ begin
     end process;
 
     -- Next State Logic and Output Logic
-    process (state, next_state_flag, jmp_flag, store_flag, load_flag) -- Combinational
+    process (state, jmp_flag, store_flag, load_flag) -- Combinational
     begin
         -- Default assignments to avoid latches
         mem_read_en <= '0';
