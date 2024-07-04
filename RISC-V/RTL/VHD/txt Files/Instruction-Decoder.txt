@@ -147,7 +147,7 @@ architecture Behavioral of Instruction_Decoder is
                         f <= "00" & func3;
                     when "100"=>
                         --xor
-                        --adnere Imm länge. drüber schauen, extenden, absenden
+                        --adnere Imm lÃ¤nge. drÃ¼ber schauen, extenden, absenden
                         f <= "01" & func3;
                     when "101"=>
                         --srl, sra is "111
@@ -158,11 +158,11 @@ architecture Behavioral of Instruction_Decoder is
                         end if;
                     when "110"=>
                         --or
-                        --adnere Imm länge. drüber schauen, extenden, absenden
+                        --adnere Imm lÃ¤nge. drÃ¼ber schauen, extenden, absenden
                         f <= "01" & "111";    
                     when "111"=>
                         --and
-                        --adnere Imm länge. drüber schauen, extenden, absenden
+                        --adnere Imm lÃ¤nge. drÃ¼ber schauen, extenden, absenden
                         f <= "01" & "111";
                     end case;
 ---------------------

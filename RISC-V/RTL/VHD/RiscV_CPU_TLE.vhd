@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- University: Technical University of Munich
+-- Student: Tiemo Schmidt
 -- 
 -- Create Date: 04.07.2024 10:41:18
 -- Design Name: 
